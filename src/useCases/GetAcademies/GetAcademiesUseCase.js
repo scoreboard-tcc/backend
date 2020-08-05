@@ -11,7 +11,11 @@ class GetAcademiesUseCase {
     this.academyRepository = academyRepository;
   }
 
-  async execute(pagination) {
+  async execute(name, pagination) {
+    if (name) {
+      return this.academyRepository.findByName(name, pagination);
+    }
+
     return this.academyRepository.findAll(pagination);
   }
 }

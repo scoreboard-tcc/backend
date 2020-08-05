@@ -14,8 +14,9 @@ class GetAcademiesController {
 
   async handle(request, response) {
     const pagination = getPagination(request);
+    const { search = '' } = request.query;
 
-    const academies = await this.getAcademiesUseCase.execute(pagination);
+    const academies = await this.getAcademiesUseCase.execute(search, pagination);
 
     return response.status(200).json(academies);
   }
