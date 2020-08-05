@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  database:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=scoreboard
+      - MONGO_USER=mongo
+      - MONGO_PASSWORD=1234
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  
+  test_database:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=scoreboard
+    ports:
+      - 5433:5432
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=1234
+      - MONGO_INITDB_DATABASE=scoreboard
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/data/db
+
+  test_mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27018:27017
+  
+volumes:
+  pgdata:
+  mongodata:
