@@ -5,9 +5,10 @@ class SearchAcademiesUseCase {
    * SearchAcademiesUseCase
    *
    * @class
-   * @param {AcademyRepository} academyRepository - AcademyRepository
+   * @param {object} container - Container
+   * @param {AcademyRepository} container.academyRepository - AcademyRepository
    */
-  constructor(academyRepository) {
+  constructor({ academyRepository }) {
     this.academyRepository = academyRepository;
   }
 

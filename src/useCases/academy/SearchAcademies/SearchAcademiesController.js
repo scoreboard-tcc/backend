@@ -2,16 +2,17 @@ const Joi = require('joi');
 
 const SearchAcademiesUseCase = require('./SearchAcademiesUseCase');
 const { getPagination } = require('../../../utils/pagination');
-const validate = require('../../../utils/validation');
+const validateSchema = require('../../../utils/validation');
 
 class SearchAcademiesController {
   /**
    * SearchAcademiesController
    *
    * @class
-   * @param {SearchAcademiesUseCase} searchAcademiesUseCase - searchAcademiesUseCase
+   * @param {object} container - Container
+   * @param {SearchAcademiesUseCase} container.searchAcademiesUseCase - SearchAcademyUseCase
    */
-  constructor(searchAcademiesUseCase) {
+  constructor({ searchAcademiesUseCase }) {
     this.searchAcademiesUseCase = searchAcademiesUseCase;
   }
 
@@ -23,7 +24,7 @@ class SearchAcademiesController {
       }),
     });
 
-    validate(schema, request);
+    validateSchema(schema, request);
   }
 
   async handle(request, response) {
