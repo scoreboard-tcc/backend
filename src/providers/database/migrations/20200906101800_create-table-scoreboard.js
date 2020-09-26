@@ -2,7 +2,7 @@ const Knex = require('knex');
 
 const { SchemaBuilder } = Knex;
 
-const tableName = 'Academy';
+const tableName = 'Scoreboard';
 
 /**
  * Up
@@ -17,19 +17,32 @@ exports.up = (knex) => knex.schema
       .primary();
 
     table
-      .string('subdomain')
-      .unique()
+      .string('serialNumber')
       .notNullable();
 
     table
-      .string('name')
+      .integer('academyId')
+      .notNullable()
+      .references('id')
+      .inTable('Academy');
+
+    table
+      .string('description')
       .notNullable();
 
     table
-      .string('address');
+      .string('publishToken');
 
     table
-      .string('logoUrl');
+      .string('refreshToken');
+
+    table
+      .string('staticToken')
+      .notNullable();
+
+    table
+      .boolean('active')
+      .defaultTo(true);
 
     table
       .timestamp('createdAt')

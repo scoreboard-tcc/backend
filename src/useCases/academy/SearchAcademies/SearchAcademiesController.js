@@ -20,7 +20,8 @@ class SearchAcademiesController {
     const schema = Joi.object({
       query: Joi.object({
         search: Joi.string()
-          .max(255),
+          .max(255)
+          .min(0),
       }),
     });
 
@@ -28,7 +29,7 @@ class SearchAcademiesController {
   }
 
   async handle(request, response) {
-    this.validate(request);
+    // this.validate(request);
 
     const pagination = getPagination(request);
     const { search = '' } = request.query;

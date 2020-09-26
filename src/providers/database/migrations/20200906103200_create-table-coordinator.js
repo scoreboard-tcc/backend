@@ -2,7 +2,7 @@ const Knex = require('knex');
 
 const { SchemaBuilder } = Knex;
 
-const tableName = 'Academy';
+const tableName = 'Coordinator';
 
 /**
  * Up
@@ -17,19 +17,29 @@ exports.up = (knex) => knex.schema
       .primary();
 
     table
-      .string('subdomain')
+      .string('email')
       .unique()
       .notNullable();
+
+    table
+      .string('password')
+      .notNullable()
+      .defaultTo('');
 
     table
       .string('name')
       .notNullable();
 
     table
-      .string('address');
+      .integer('academyId')
+      .notNullable()
+      .references('id')
+      .inTable('Academy');
 
     table
-      .string('logoUrl');
+      .boolean('isVerified')
+      .notNullable()
+      .defaultTo(false);
 
     table
       .timestamp('createdAt')

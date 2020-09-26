@@ -1,23 +1,30 @@
-const knex = require('../providers/database');
+const createQuery = require('../providers/database');
 
 const tableName = 'Academy';
 
 class AcademyRepository {
+  async findById(id) {
+    return createQuery(tableName)
+      .where('id', '=', id)
+      .first();
+  }
+
   async findByName(name, pagination) {
-    return knex(tableName)
+    return createQuery(tableName)
       .where('name', 'ilike', `%${name}%`)
       .paginate(pagination);
   }
 
   async findBySubdomain(subdomain) {
-    return knex(tableName)
+    return createQuery(tableName)
       .where('subdomain', 'like', subdomain)
       .first();
   }
 
   async create(academy) {
-    return knex(tableName)
-      .insert(academy);
+    return createQuery(tableName)
+      .insert(academy)
+      .returning('id');
   }
 }
 
