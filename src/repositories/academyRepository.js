@@ -26,6 +26,12 @@ class AcademyRepository {
       .insert(academy)
       .returning('id');
   }
+
+  async update(id, academy) {
+    return createQuery(tableName)
+      .update(academy)
+      .where('id', '=', id);
+  }
 }
 
 module.exports = AcademyRepository;

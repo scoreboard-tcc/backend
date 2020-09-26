@@ -2,7 +2,7 @@ const CheckIfSubdomainIsAvailableUseCase = require('./CheckIfSubdomainIsAvailabl
 
 class CheckIfSubdomainIsAvailableController {
   /**
-   * CreateAcademyController
+   * CheckIfSubdomainIsAvailableController
    *
    * @class
    * @param {object} container - Container

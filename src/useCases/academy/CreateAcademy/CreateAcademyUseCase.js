@@ -34,6 +34,7 @@ class CreateAcademyUseCase {
       name: request.name,
       subdomain: request.subdomain,
       address: request.address,
+      logoUrl: 'https://uilogos.co/img/logomark/hexa.png',
     };
 
     const [academyId] = await this.academyRepository.create(payload);
