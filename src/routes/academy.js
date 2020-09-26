@@ -16,6 +16,10 @@ router.get('/:id', wrap(async (request, response) => {
   await container.cradle.getAcademyByIdController.handle(request, response);
 }));
 
+router.get('/:id/scoreboards', wrap(async (request, response) => {
+  await container.cradle.searchScoreboardsController.handle(request, response);
+}));
+
 router.put('/:id',
   upload.single('logo'),
   wrap(async (request, response) => {

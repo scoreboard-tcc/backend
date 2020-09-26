@@ -10,6 +10,14 @@ class ScoreboardRepository {
       .first();
   }
 
+  async findByAcademyAndDescription(academyId, description, pagination) {
+    return createQuery(tableName)
+      .where('description', 'ilike', `%${description}%`)
+      .andWhere('academyId', '=', academyId)
+      .andWhere('active', '=', true)
+      .paginate(pagination);
+  }
+
   async create(scoreboard) {
     return createQuery(tableName)
       .insert(scoreboard);
