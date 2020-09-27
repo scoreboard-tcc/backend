@@ -20,6 +20,10 @@ router.get('/:id/scoreboards', wrap(async (request, response) => {
   await container.cradle.searchScoreboardsController.handle(request, response);
 }));
 
+router.post('/:id/scoreboards', wrap(async (request, response) => {
+  await container.cradle.createScoreboardController.handle(request, response);
+}));
+
 router.put('/:id',
   upload.single('logo'),
   wrap(async (request, response) => {

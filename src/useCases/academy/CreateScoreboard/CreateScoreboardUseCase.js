@@ -9,7 +9,7 @@ const CreateScoreboardValidator = require('./CreateScoreboardValidator');
 
 class CreateScoreboardUseCase {
   /**
-   * CreateAcademyController
+   * CreateScoreboardUseCase
    *
    * @class
    * @param {object} container - Container
@@ -32,7 +32,10 @@ class CreateScoreboardUseCase {
 
     const scoreboards = this.prepareScoreboardsForInsertion(academyId, scoreboardPayload);
 
-    for (const scoreboard of scoreboards) { await this.createScoreboard(scoreboard); }
+    const promises = scoreboards.map((scoreboard) => this.createScoreboard(scoreboard));
+
+    const createdScoreboards = await Promise.all(promises);
+    return createdScoreboards;
   }
 
   prepareScoreboardsForInsertion(academyId, scoreboardPayload) {
@@ -50,19 +53,20 @@ class CreateScoreboardUseCase {
   async checkIfAcademyExists(id) {
     const academy = await this.academyRepository.findById(id);
 
-    if (!academy) throw new NotFoundException('Academia', 'id', id);
+    if (!academy) throw new NotFoundException('academia', 'id', id);
   }
 
   async createScoreboard(scoreboard) {
     await this.checkIfSerialNumberIsAvailable(scoreboard.serialNumber);
 
-    await this.scoreboardRepository.create(scoreboard);
+    const [id] = await this.scoreboardRepository.create(scoreboard);
+    return id;
   }
 
   async checkIfSerialNumberIsAvailable(serialNumber) {
     const scoreboard = await this.scoreboardRepository.findBySerialNumberAndActive(serialNumber);
 
-    if (scoreboard) throw new AlreadyUsedException('Placar', 'Identificador único', serialNumber);
+    if (scoreboard) throw new AlreadyUsedException('Placar', 'identificador único', serialNumber);
   }
 }
 
