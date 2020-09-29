@@ -41,4 +41,12 @@ router.post('/',
     await container.cradle.createAcademyController.handle(request, response, next);
   }));
 
+router.post('/:id/coordinators', wrap(async (request, response) => {
+  await container.cradle.createCoordinatorController.handle(request, response);
+}));
+
+router.get('/:id/coordinators', wrap(async (request, response) => {
+  await container.cradle.searchCoordinatorsController.handle(request, response);
+}));
+
 module.exports = router;

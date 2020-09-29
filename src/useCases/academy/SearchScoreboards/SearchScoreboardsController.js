@@ -15,10 +15,14 @@ class SearchScoreboardsController {
 
   async handle(request, response) {
     const pagination = getPagination(request);
-    const { id } = request.params;
+    const { id: scoreboardId } = request.params;
     const { search = '' } = request.query;
 
-    const academies = await this.searchScoreboardsUseCase.execute(Number(id), search, pagination);
+    const academies = await this.searchScoreboardsUseCase.execute(
+      Number(scoreboardId),
+      search,
+      pagination,
+    );
 
     return response.status(200).json(academies);
   }

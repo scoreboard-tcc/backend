@@ -1,3 +1,4 @@
+const bcryptjs = require('bcryptjs');
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const AcademyRepository = require('../../../repositories/academyRepository');
@@ -30,24 +31,27 @@ class CreateCoordinatorUseCase {
     await this.checkIfEmailIsAlreadyUsed(coordinatorPayload.email);
 
     await this.createCoordinator(academyId, coordinatorPayload);
-
-    // enviar email para setar senha
   }
 
   async checkIfAcademyExists(id) {
     const academy = await this.academyRepository.findById(id);
 
-    if (!academy) throw new NotFoundException('Academia', 'id', id);
+    if (!academy) throw new NotFoundException('academia', 'id', id);
   }
 
   async checkIfEmailIsAlreadyUsed(email) {
     const coordinator = await this.coordinatorRepository.findByEmail(email);
 
-    if (coordinator) throw new AlreadyUsedException('Coordenador', 'email', email);
+    if (coordinator) throw new AlreadyUsedException('coordenador', 'email', email);
   }
 
   async createCoordinator(academyId, coordinator) {
-    await this.coordinatorRepository.create({ ...coordinator, academyId });
+    await this.coordinatorRepository.create({
+      email: coordinator.email,
+      name: coordinator.name,
+      academyId,
+      password: await bcryptjs.hash(coordinator.password, 10),
+    });
   }
 }
 

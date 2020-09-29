@@ -1,8 +1,8 @@
 const UpdateScoreboardUseCase = require('./UpdateScoreboardUseCase');
 
-class DeleteScoreboardController {
+class UodateScoreboardController {
   /**
-   * DeleteScoreboardController
+   * UodateScoreboardController
    *
    * @class
    * @param {object} container - Container
@@ -21,4 +21,4 @@ class DeleteScoreboardController {
   }
 }
 
-module.exports = DeleteScoreboardController;
+module.exports = UodateScoreboardController;
