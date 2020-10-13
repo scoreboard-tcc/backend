@@ -14,7 +14,7 @@ module.exports = Joi.object({
   address: Joi.string()
     .max(255),
 
-  scoreboards: Joi.array().items(CreateScoreboardValidator)
+  scoreboards: Joi.array().optional().items(CreateScoreboardValidator)
     .max(20),
 
   coordinator: CreateCoordinatorValidator

@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const multer = require('multer');
-const container = require('../container');
-const { transactionMiddleware } = require('../middlewares/transaction');
-const wrap = require('../utils/wrapRoute');
+const container = require('../../container');
+const { transactionMiddleware } = require('../../middlewares/transaction');
+const wrap = require('../../utils/wrapRoute');
 
 const upload = multer();
 

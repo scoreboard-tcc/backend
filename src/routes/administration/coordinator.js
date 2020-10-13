@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const container = require('../container');
-const wrap = require('../utils/wrapRoute');
+const container = require('../../container');
+const wrap = require('../../utils/wrapRoute');
 
 const router = Router();
 

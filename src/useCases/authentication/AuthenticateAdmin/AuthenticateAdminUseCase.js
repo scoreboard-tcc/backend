@@ -35,7 +35,7 @@ class AuthenticateAdminUseCase {
   }
 
   async generateToken(email) {
-    return jwt.sign({ email }, config.jwtSecret);
+    return jwt.sign({ email, type: 'administrator' }, config.jwtSecret);
   }
 }
 

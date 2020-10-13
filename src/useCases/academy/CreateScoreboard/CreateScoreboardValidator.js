@@ -17,4 +17,4 @@ const scoreboardSchema = Joi.object({
 module.exports = Joi.alternatives().try(
   scoreboardSchema,
   Joi.array().items(scoreboardSchema),
-).required();
+);

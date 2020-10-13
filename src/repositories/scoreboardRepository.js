@@ -42,6 +42,13 @@ class ScoreboardRepository {
       .update(scoreboard)
       .where('id', '=', id);
   }
+
+  async count() {
+    return createQuery(tableName)
+      .where('active', '=', true)
+      .count()
+      .first();
+  }
 }
 
 module.exports = ScoreboardRepository;

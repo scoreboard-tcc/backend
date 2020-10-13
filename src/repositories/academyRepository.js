@@ -32,6 +32,12 @@ class AcademyRepository {
       .update(academy)
       .where('id', '=', id);
   }
+
+  async count() {
+    return createQuery(tableName)
+      .count()
+      .first();
+  }
 }
 
 module.exports = AcademyRepository;
