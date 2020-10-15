@@ -1,10 +1,6 @@
 const ValidationException = require('../../../exceptions/ValidationException');
 const CreateAcademyUseCase = require('./CreateAcademyUseCase');
 
-function academyFactory() {
-    
-}
-
 describe('CreateAcademyUseCase', () => {
   test('Gera exceção se ocorrer erro na validação', async () => {
     const createAcademyUseCase = new CreateAcademyUseCase({
@@ -32,9 +28,9 @@ describe('CreateAcademyUseCase', () => {
     });
 
     try {
-        createAcademyUseCase.execute({});
-      } catch (error) {
-        expect(error).toBeInstanceOf(ValidationException);
-      }
+      createAcademyUseCase.execute({});
+    } catch (error) {
+      expect(error).toBeInstanceOf(ValidationException);
+    }
   });
 });
