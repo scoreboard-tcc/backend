@@ -15,6 +15,9 @@ module.exports = Joi.object({
     address: Joi.string()
       .max(255)
       .required(),
+
+    additionalInfo: Joi.string()
+      .max(2000),
   }).required(),
 
 });

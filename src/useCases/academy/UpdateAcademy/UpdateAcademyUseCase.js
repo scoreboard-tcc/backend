@@ -16,8 +16,8 @@ class UpdateAcademyUseCase {
     this.academyRepository = academyRepository;
   }
 
-  validate(scoreboard) {
-    validateSchema(UpdateAcademyValidator, scoreboard);
+  validate(academy) {
+    validateSchema(UpdateAcademyValidator, academy);
   }
 
   async execute(id, academy) {
@@ -31,6 +31,7 @@ class UpdateAcademyUseCase {
       subdomain: academy.subdomain,
       address: academy.address,
       logoUrl: 'https://uilogos.co/img/logomark/hexa.png',
+      additionalInfo: academy.additionalInfo,
     };
 
     await this.academyRepository.update(id, payload);

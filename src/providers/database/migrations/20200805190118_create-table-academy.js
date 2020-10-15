@@ -29,6 +29,10 @@ exports.up = (knex) => knex.schema
       .string('address');
 
     table
+      .text('additionalInfo')
+      .defaultTo('');
+
+    table
       .string('logoUrl');
 
     table
