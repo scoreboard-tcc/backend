@@ -1,7 +1,7 @@
 class BusinessException extends Error {
-  constructor(message) {
+  constructor(message, status = 412) {
     super(message);
-    this.status = 412;
+    this.status = status;
   }
 }
 
