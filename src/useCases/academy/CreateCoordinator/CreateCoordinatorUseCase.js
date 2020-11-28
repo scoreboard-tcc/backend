@@ -28,7 +28,7 @@ class CreateCoordinatorUseCase {
     this.validate(coordinatorPayload);
 
     await this.checkIfAcademyExists(academyId);
-    await this.checkIfEmailIsAlreadyUsed(coordinatorPayload.email);
+    await this.checkIfEmailIsAlreadyUsed(coordinatorPayload.email, academyId);
 
     await this.createCoordinator(academyId, coordinatorPayload);
   }
@@ -39,8 +39,8 @@ class CreateCoordinatorUseCase {
     if (!academy) throw new NotFoundException('academia', 'id', id);
   }
 
-  async checkIfEmailIsAlreadyUsed(email) {
-    const coordinator = await this.coordinatorRepository.findByEmail(email);
+  async checkIfEmailIsAlreadyUsed(email, academyId) {
+    const coordinator = await this.coordinatorRepository.findByEmailAndAcademyId(email, academyId);
 
     if (coordinator) throw new AlreadyUsedException('coordenador', 'email', email);
   }

@@ -9,9 +9,10 @@ class CoordinatorRepository {
       .first();
   }
 
-  async findByEmail(email) {
+  async findByEmailAndAcademyId(email, academyId) {
     return createQuery(tableName)
       .where('email', '=', email)
+      .andWhere('academyId', '=', academyId)
       .first();
   }
 

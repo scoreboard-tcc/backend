@@ -18,7 +18,6 @@ exports.up = (knex) => knex.schema
 
     table
       .string('email')
-      .unique()
       .notNullable();
 
     table
