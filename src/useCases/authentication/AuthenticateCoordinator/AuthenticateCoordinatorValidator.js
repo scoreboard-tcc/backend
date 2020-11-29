@@ -9,6 +9,7 @@ module.exports = Joi.object({
     .min(6)
     .required(),
 
-  academyId: Joi.number()
+  academySubdomain: Joi.string()
+    .max(255)
     .required(),
 });

@@ -19,37 +19,47 @@ class AuthenticateCoordinatorUseCase {
     this.coordinatorRepository = coordinatorRepository;
   }
 
-  validate(id) {
-    validateSchema(AuthenticateCoordinatorValidator, id);
+  validate(request) {
+    validateSchema(AuthenticateCoordinatorValidator, request);
   }
 
-  async execute(credentials) {
-    this.validate(credentials);
+  async execute(request) {
+    this.validate(request);
 
-    await this.checkIfAcademyExists(credentials.academyId);
-    await this.checkIfCredentiaisAreValid(credentials);
+    const academy = await this.checkIfAcademyExists(request.academySubdomain);
+    await this.checkIfCredentiaisAreValid(request, academy.id);
 
-    const token = await this.generateToken(credentials.academyId, credentials.email);
+    const token = await this.generateToken(academy, request.email);
 
     return token;
   }
 
-  async checkIfAcademyExists(id) {
-    const academy = await this.academyRepository.findById(id);
+  async checkIfAcademyExists(subdomain) {
+    const academy = await this.academyRepository.findBySubdomain(subdomain);
 
-    if (!academy) throw new NotFoundException('academia', 'id', id);
+    if (!academy) throw new NotFoundException('academia', 'subdomínio', subdomain);
+
+    return academy;
   }
 
-  async checkIfCredentiaisAreValid(credentials) {
+  async checkIfCredentiaisAreValid(credentials, academyId) {
     await this
       .coordinatorRepository
-      .findByAcademyIdAndEmailAndPassword(credentials.academyId,
+      .findByAcademyIdAndEmailAndPassword(academyId,
         credentials.email,
         credentials.password);
   }
 
-  async generateToken(academyId, email) {
-    return jwt.sign({ academyId, email, type: 'coordinator' }, config.jwtSecret);
+  async generateToken(academy, email) {
+    return jwt.sign({
+      academy: {
+        id: academy.id,
+        subdomain: academy.subdomain,
+        name: academy.name,
+      },
+      email,
+      type: 'coordinator',
+    }, config.jwtSecret);
   }
 }
 
