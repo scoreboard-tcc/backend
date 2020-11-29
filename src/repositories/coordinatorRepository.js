@@ -1,3 +1,8 @@
+const bcryptjs = require('bcryptjs');
+
+const BusinessException = require('../exceptions/BusinessException');
+const NotFoundException = require('../exceptions/NotFoundException');
+
 const createQuery = require('../providers/database');
 
 const tableName = 'Coordinator';
@@ -39,6 +44,25 @@ class CoordinatorRepository {
     return createQuery(tableName)
       .update(coordinator)
       .where('id', '=', id);
+  }
+
+  async findByAcademyIdAndEmailAndPassword(academyId, email, password) {
+    const coordinator = await createQuery(tableName)
+      .where('email', '=', email)
+      .andWhere('academyId', '=', academyId)
+      .first();
+
+    if (!coordinator) {
+      throw new NotFoundException('coordenador', 'email', email);
+    }
+
+    const isPasswordCorrect = await bcryptjs.compare(password, coordinator.password);
+
+    if (!isPasswordCorrect) {
+      throw new BusinessException('As credenciais informadas estão incorretas.');
+    }
+
+    return coordinator;
   }
 }
 
