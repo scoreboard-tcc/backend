@@ -1,7 +1,6 @@
 const validateSchema = require('../../../utils/validation');
-const CheckIfSubdomainIsAvailableValidator = require('./CheckIfSubdomainIsAvailableValidator');
-
 const AcademyRepository = require('../../../repositories/academyRepository');
+const CheckIfSubdomainIsAvailableValidator = require('./CheckIfSubdomainIsAvailableValidator');
 
 class CheckIfSubdomainIsAvailableUseCase {
   /**
@@ -15,14 +14,12 @@ class CheckIfSubdomainIsAvailableUseCase {
     this.academyRepository = academyRepository;
   }
 
-  validate(request) {
-    validateSchema(CheckIfSubdomainIsAvailableValidator, request);
+  validate(subdomain) {
+    validateSchema(CheckIfSubdomainIsAvailableValidator, subdomain);
   }
 
-  async execute(request) {
-    this.validate(request);
-
-    const { params: { subdomain } } = request;
+  async execute(subdomain) {
+    this.validate(subdomain);
 
     const academy = await this.academyRepository.findBySubdomain(subdomain);
 
