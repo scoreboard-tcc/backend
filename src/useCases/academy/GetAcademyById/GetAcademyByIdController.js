@@ -13,7 +13,9 @@ class CheckIfSubdomainIsAvailableController {
   }
 
   async handle(request, response) {
-    const academy = await this.getAcademyByIdUseCase.execute(request);
+    const { params: { id } } = request;
+
+    const academy = await this.getAcademyByIdUseCase.execute(id);
 
     return response.status(200).json(academy);
   }

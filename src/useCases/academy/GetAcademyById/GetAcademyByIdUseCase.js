@@ -16,14 +16,12 @@ class GetAcademyByIdUseCase {
     this.academyRepository = academyRepository;
   }
 
-  validate(request) {
-    validateSchema(GetAcademyByIdValidator, request);
+  validate(id) {
+    validateSchema(GetAcademyByIdValidator, id);
   }
 
-  async execute(request) {
-    this.validate(request);
-
-    const { params: { id } } = request;
+  async execute(id) {
+    this.validate(id);
 
     const academy = await this.getAcademy(id);
 
