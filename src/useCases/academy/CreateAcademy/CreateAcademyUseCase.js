@@ -1,9 +1,10 @@
 const AcademyRepository = require('../../../repositories/academyRepository');
-const CreateScoreboardUseCase = require('../CreateScoreboard/CreateScoreboardUseCase');
 const validateSchema = require('../../../utils/validation');
 const CreateAcademyValidator = require('./CreateAcademyValidator');
-const CreateCoordinatorUseCase = require('../CreateCoordinator/CreateCoordinatorUseCase');
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
+const CheckIfSubdomainIsAvailableUseCase = require('../CheckIfSubdomainIsAvailable/CheckIfSubdomainIsAvailableUseCase');
+const CreateCoordinatorUseCase = require('../../coordinator/CreateCoordinator/CreateCoordinatorUseCase');
+const CreateScoreboardUseCase = require('../../scoreboard/CreateScoreboard/CreateScoreboardUseCase');
 
 class CreateAcademyUseCase {
   /**
@@ -13,12 +14,16 @@ class CreateAcademyUseCase {
    * @param {object} container - Container
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    * @param {CreateCoordinatorUseCase} container.createCoordinatorUseCase - CreateCoordinatorUseCase
+   * @param {CheckIfSubdomainIsAvailableUseCase} container.checkIfSubdomainIsAvailableUseCase - CheckIfSubdomainIsAvailableUseCase
    * @param {CreateScoreboardUseCase} container.createScoreboardUseCase - CreateScoreboardUseCase
    */
-  constructor({ academyRepository, createScoreboardUseCase, createCoordinatorUseCase }) {
+  constructor({
+    academyRepository, createScoreboardUseCase, createCoordinatorUseCase, checkIfSubdomainIsAvailableUseCase,
+  }) {
     this.academyRepository = academyRepository;
     this.createScoreboardUseCase = createScoreboardUseCase;
     this.createCoordinatorUseCase = createCoordinatorUseCase;
+    this.checkIfSubdomainIsAvailableUseCase = checkIfSubdomainIsAvailableUseCase;
   }
 
   validate(scoreboard) {
@@ -44,9 +49,9 @@ class CreateAcademyUseCase {
   }
 
   async checkIfSubdomainIsAlreadyUsed(subdomain) {
-    const academy = await this.academyRepository.findBySubdomain(subdomain);
+    const isAvailable = await this.checkIfSubdomainIsAvailableUseCase.execute(subdomain);
 
-    if (academy) throw new AlreadyUsedException('Academia', 'subdomain', subdomain);
+    if (!isAvailable) throw new AlreadyUsedException('Academia', 'subdomain', subdomain);
   }
 }
 

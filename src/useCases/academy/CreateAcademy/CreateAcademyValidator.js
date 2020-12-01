@@ -1,6 +1,6 @@
 const Joi = require('joi');
-const CreateCoordinatorValidator = require('../CreateCoordinator/CreateCoordinatorValidator');
-const CreateScoreboardValidator = require('../CreateScoreboard/CreateScoreboardValidator');
+const CreateScoreboardValidator = require('../../scoreboard/CreateScoreboard/CreateScoreboardValidator');
+const CreateCoordinatorValidator = require('../../coordinator/CreateCoordinator/CreateCoordinatorValidator');
 
 module.exports = Joi.object({
   name: Joi.string()
@@ -14,7 +14,9 @@ module.exports = Joi.object({
   address: Joi.string()
     .max(255),
 
-  scoreboards: Joi.array().optional().items(CreateScoreboardValidator)
+  scoreboards: Joi.array()
+    .optional()
+    .items(CreateScoreboardValidator)
     .max(20),
 
   coordinator: CreateCoordinatorValidator
