@@ -11,13 +11,13 @@ describe('CreateAcademyUseCase', () => {
     });
 
     try {
-      useCase.execute({});
+      await useCase.execute({});
     } catch (error) {
       expect(error).toBeInstanceOf(ValidationException);
     }
   });
 
-  test('Gera exceção se o subdomínio já está sendo utilizado', () => {
+  test('Gera exceção se o subdomínio já está sendo utilizado', async () => {
     const mockCheckIfSubdomainIsAvailableUseCase = {
       execute: jest.fn(() => false),
     };
@@ -29,8 +29,26 @@ describe('CreateAcademyUseCase', () => {
       checkIfSubdomainIsAvailableUseCase: mockCheckIfSubdomainIsAvailableUseCase,
     });
 
+    const academy = {
+      subdomain: 'club',
+      name: 'Club',
+      address: 'address',
+    };
+
+    const scoreboards = [];
+
+    const coordinator = {
+      name: 'John',
+      email: 'john@doe.com',
+      password: '123456',
+    };
+
     try {
-      useCase.execute({ subdomain: 'club' });
+      await useCase.execute({
+        ...academy,
+        scoreboards,
+        coordinator,
+      });
     } catch (error) {
       expect(error).toBeInstanceOf(AlreadyUsedException);
     }

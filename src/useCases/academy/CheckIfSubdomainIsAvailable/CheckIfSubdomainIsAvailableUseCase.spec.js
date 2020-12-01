@@ -2,13 +2,13 @@ const ValidationException = require('../../../exceptions/ValidationException');
 const CheckIfSubdomainIsAvailableUseCase = require('./CheckIfSubdomainIsAvailableUseCase');
 
 describe('CheckIfSubdomainIsAvailableUseCase', () => {
-  test('Gera exceção se ocorrer erro na validação', () => {
+  test('Gera exceção se ocorrer erro na validação', async () => {
     const useCase = new CheckIfSubdomainIsAvailableUseCase({
       academyRepository: null,
     });
 
     try {
-      useCase.execute('');
+      await useCase.execute('');
     } catch (error) {
       expect(error).toBeInstanceOf(ValidationException);
     }
