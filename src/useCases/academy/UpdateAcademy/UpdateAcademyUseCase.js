@@ -2,7 +2,7 @@ const AcademyRepository = require('../../../repositories/academyRepository');
 const validateSchema = require('../../../utils/validation');
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const UpdateAcademyValidator = require('./UpdateAcademyValidator');
-const NotFoundException = require('../../../exceptions/NotFoundException');
+const GetAcademyByIdUseCase = require('../GetAcademyById/GetAcademyByIdUseCase');
 
 class UpdateAcademyUseCase {
   /**
@@ -10,18 +10,21 @@ class UpdateAcademyUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    */
-  constructor({ academyRepository }) {
+  constructor({ academyRepository, getAcademyByIdUseCase }) {
     this.academyRepository = academyRepository;
+    this.getAcademyByIdUseCase = getAcademyByIdUseCase;
   }
 
-  validate(academy) {
-    validateSchema(UpdateAcademyValidator, academy);
+  validate(id, academy) {
+    validateSchema(UpdateAcademyValidator.id, id);
+    validateSchema(UpdateAcademyValidator.academy, academy);
   }
 
   async execute(id, academy) {
-    this.validate({ id, academy });
+    this.validate(id, academy);
 
     await this.checkIfAcademyExists(id);
     await this.checkIfSubdomainIsAlreadyUsed(academy.subdomain, id);
@@ -38,9 +41,7 @@ class UpdateAcademyUseCase {
   }
 
   async checkIfAcademyExists(id) {
-    const academy = await this.academyRepository.findById(id);
-
-    if (!academy) throw new NotFoundException('Academia', 'id', id);
+    await this.getAcademyByIdUseCase.execute(id);
   }
 
   async checkIfSubdomainIsAlreadyUsed(subdomain, academyId) {

@@ -1,22 +1,24 @@
 const UpdateAcademyUseCase = require('./UpdateAcademyUseCase');
 
-class CreateAcademyController {
+class UpdateAcademyController {
   /**
-   * CreateAcademyController
+   * UpdateAcademyController
    *
    * @class
    * @param {object} container - Container
-   * @param {UpdateAcademyUseCase} container.updateAcademyUseCase - CpdateAcademyUseCase
+   * @param {UpdateAcademyUseCase} container.updateAcademyUseCase - UpdateAcademyUseCase
    */
   constructor({ updateAcademyUseCase }) {
     this.updateAcademyUseCase = updateAcademyUseCase;
   }
 
   async handle(request, response) {
-    await this.updateAcademyUseCase.execute(Number(request.params.id), request.body);
+    const academyId = Number(request.params.id);
+
+    await this.updateAcademyUseCase.execute(academyId, request.body);
 
     return response.status(200).send();
   }
 }
 
-module.exports = CreateAcademyController;
+module.exports = UpdateAcademyController;
