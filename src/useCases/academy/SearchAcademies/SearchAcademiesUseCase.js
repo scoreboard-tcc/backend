@@ -1,4 +1,6 @@
 const AcademyRepository = require('../../../repositories/academyRepository');
+const validateSchema = require('../../../utils/validation');
+const SearchAcademiesValidator = require('./SearchAcademiesValidator');
 
 class SearchAcademiesUseCase {
   /**
@@ -12,7 +14,13 @@ class SearchAcademiesUseCase {
     this.academyRepository = academyRepository;
   }
 
+  validate(name) {
+    validateSchema(SearchAcademiesValidator, name);
+  }
+
   async execute(name, pagination) {
+    this.validate(name);
+
     return this.academyRepository.findByName(name, pagination);
   }
 }
