@@ -1,5 +1,7 @@
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const AcademyRepository = require('../../../repositories/academyRepository');
+const validateSchema = require('../../../utils/validation');
+const GetAcademyBySubdomainValidator = require('./GetAcademyBySubdomainValidator');
 
 class GetAcademyPublicDataBySubdomainUseCase {
   /**
@@ -13,7 +15,13 @@ class GetAcademyPublicDataBySubdomainUseCase {
     this.academyRepository = academyRepository;
   }
 
+  validate(id) {
+    validateSchema(GetAcademyBySubdomainValidator, id);
+  }
+
   async execute(subdomain) {
+    this.validate(subdomain);
+
     const academy = await this.academyRepository.findBySubdomain(subdomain);
 
     // TODO: retornar partidas em andamento/finalizadas a pouco tempo
