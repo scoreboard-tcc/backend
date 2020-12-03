@@ -12,4 +12,4 @@ module.exports = Joi.object({
   academySubdomain: Joi.string()
     .max(255)
     .required(),
-});
+}).required();

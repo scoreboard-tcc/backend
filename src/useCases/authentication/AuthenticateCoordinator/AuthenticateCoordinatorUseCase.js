@@ -2,8 +2,9 @@ const jwt = require('jsonwebtoken');
 const validateSchema = require('../../../utils/validation');
 const AuthenticateCoordinatorValidator = require('./AuthenticateCoordinatorValidator');
 const config = require('../../../config/secrets');
-const NotFoundException = require('../../../exceptions/NotFoundException');
 const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
+const AcademyRepository = require('../../../repositories/academyRepository');
+const GetAcademyBySubdomainUseCase = require('../../academy/GetAcademyBySubdomain/GetAcademyBySubdomainUseCase');
 
 class AuthenticateCoordinatorUseCase {
   /**
@@ -12,11 +13,13 @@ class AuthenticateCoordinatorUseCase {
    * @class
    * @param {object} container - Container
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
+   * @param {GetAcademyBySubdomainUseCase} container.getAcademyBySubdomainUseCase - GetAcademyBySubdomainUseCase
    * @param {CoordinatorRepository} container.coordinatorRepository - CoordinatorRepository
    */
-  constructor({ academyRepository, coordinatorRepository }) {
+  constructor({ academyRepository, coordinatorRepository, getAcademyBySubdomainUseCase }) {
     this.academyRepository = academyRepository;
     this.coordinatorRepository = coordinatorRepository;
+    this.getAcademyBySubdomainUseCase = getAcademyBySubdomainUseCase;
   }
 
   validate(request) {
@@ -26,20 +29,13 @@ class AuthenticateCoordinatorUseCase {
   async execute(request) {
     this.validate(request);
 
-    const academy = await this.checkIfAcademyExists(request.academySubdomain);
+    const academy = await this.getAcademyBySubdomainUseCase.execute(request.academySubdomain);
+
     await this.checkIfCredentiaisAreValid(request, academy.id);
 
     const token = await this.generateToken(academy, request.email);
 
     return token;
-  }
-
-  async checkIfAcademyExists(subdomain) {
-    const academy = await this.academyRepository.findBySubdomain(subdomain);
-
-    if (!academy) throw new NotFoundException('academia', 'subdomínio', subdomain);
-
-    return academy;
   }
 
   async checkIfCredentiaisAreValid(credentials, academyId) {
