@@ -16,8 +16,8 @@ class AuthenticateAdminUseCase {
     this.adminRepository = adminRepository;
   }
 
-  validate(id) {
-    validateSchema(AuthenticateAdminValidator, id);
+  validate(credentials) {
+    validateSchema(AuthenticateAdminValidator, credentials);
   }
 
   async execute(credentials) {
