@@ -1,6 +1,6 @@
 const Joi = require('joi');
-const CreateScoreboardValidator = require('../../scoreboard/CreateScoreboard/CreateScoreboardValidator');
 const CreateCoordinatorValidator = require('../../coordinator/CreateCoordinator/CreateCoordinatorValidator');
+const CreateScoreboardValidator = require('../../scoreboard/CreateScoreboard/CreateScoreboardValidator');
 
 module.exports = Joi.object({
   name: Joi.string()

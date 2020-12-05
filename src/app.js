@@ -1,9 +1,9 @@
-const express = require('express');
 const cors = require('cors');
+const express = require('express');
 
-const router = require('./routes');
 const errorHandler = require('./middlewares/errorHandler');
 const { postRequestMiddleware } = require('./middlewares/transaction');
+const router = require('./routes');
 
 const app = express();
 

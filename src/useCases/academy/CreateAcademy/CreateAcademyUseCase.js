@@ -1,10 +1,10 @@
+const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const validateSchema = require('../../../utils/validation');
-const CreateAcademyValidator = require('./CreateAcademyValidator');
-const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
-const CheckIfSubdomainIsAvailableUseCase = require('../CheckIfSubdomainIsAvailable/CheckIfSubdomainIsAvailableUseCase');
 const CreateCoordinatorUseCase = require('../../coordinator/CreateCoordinator/CreateCoordinatorUseCase');
 const CreateScoreboardUseCase = require('../../scoreboard/CreateScoreboard/CreateScoreboardUseCase');
+const CheckIfSubdomainIsAvailableUseCase = require('../CheckIfSubdomainIsAvailable/CheckIfSubdomainIsAvailableUseCase');
+const CreateAcademyValidator = require('./CreateAcademyValidator');
 
 class CreateAcademyUseCase {
   /**

@@ -8,11 +8,9 @@ describe('GetAcademyByIdUseCase', () => {
       academyRepository: null,
     });
 
-    try {
-      await useCase.execute();
-    } catch (error) {
-      expect(error).toBeInstanceOf(ValidationException);
-    }
+    await expect(useCase.execute())
+      .rejects
+      .toThrow(ValidationException);
   });
 
   test('Gera exceção se não encontrar a academia', async () => {
@@ -24,11 +22,9 @@ describe('GetAcademyByIdUseCase', () => {
       academyRepository: mockAcademyRepository,
     });
 
-    try {
-      await useCase.execute(1);
-    } catch (error) {
-      expect(error).toBeInstanceOf(NotFoundException);
-    }
+    await expect(useCase.execute(1))
+      .rejects
+      .toThrow(NotFoundException);
   });
 
   test('Retorna a academia', async () => {

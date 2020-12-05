@@ -1,7 +1,7 @@
 const Knex = require('knex');
-const { attachPaginate } = require('knex-paginate');
-const knexConfig = require('../../../knexfile').development;
 const asyncLocalStorage = require('../../utils/asyncLocalStorage');
+const knexConfig = require('../../../knexfile').development;
+const { attachPaginate } = require('knex-paginate');
 
 attachPaginate();
 

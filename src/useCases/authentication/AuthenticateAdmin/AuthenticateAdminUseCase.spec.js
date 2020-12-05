@@ -1,9 +1,12 @@
 const jwt = require('jsonwebtoken');
 
+const config = require('../../../config/secrets');
 const BusinessException = require('../../../exceptions/BusinessException');
 const ValidationException = require('../../../exceptions/ValidationException');
 const AuthenticateAdminUseCase = require('./AuthenticateAdminUseCase');
-const config = require('../../../config/secrets');
+
+const email = 'john@doe.com';
+const password = '123456';
 
 describe('AuthenticateAdminUseCase', () => {
   test('Gera exceção se ocorrer erro na validação', async () => {
@@ -11,11 +14,9 @@ describe('AuthenticateAdminUseCase', () => {
       adminRepository: null,
     });
 
-    try {
-      await useCase.execute();
-    } catch (error) {
-      expect(error).toBeInstanceOf(ValidationException);
-    }
+    await expect(useCase.execute())
+      .rejects
+      .toThrow(ValidationException);
   });
 
   test('Gera exceção se credenciais forem inválidas', async () => {
@@ -29,16 +30,15 @@ describe('AuthenticateAdminUseCase', () => {
       adminRepository: mockAdminRepository,
     });
 
-    try {
-      await useCase.execute({
-        email: 'john@doe.com',
-        password: '123456',
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(BusinessException);
-      expect(mockAdminRepository.findByEmailAndPassword).toHaveBeenCalledTimes(1);
-      expect(mockAdminRepository.findByEmailAndPassword).toHaveBeenCalledWith('john@doe.com', '123456');
-    }
+    await expect(useCase.execute({
+      email,
+      password,
+    }))
+      .rejects
+      .toThrow(BusinessException);
+
+    expect(mockAdminRepository.findByEmailAndPassword).toHaveBeenCalledTimes(1);
+    expect(mockAdminRepository.findByEmailAndPassword).toHaveBeenCalledWith(email, password);
   });
 
   test('Retorna token se credenciais forem válidas', async () => {
@@ -55,13 +55,13 @@ describe('AuthenticateAdminUseCase', () => {
     config.jwtSecret = 'secret';
 
     const token = await useCase.execute({
-      email: 'john@doe.com',
-      password: '123456',
+      email,
+      password,
     });
 
     const decoded = jwt.decode(token);
 
-    expect(decoded.email).toBe('john@doe.com');
+    expect(decoded.email).toBe(email);
     expect(decoded.type).toBe('administrator');
   });
 });

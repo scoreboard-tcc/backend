@@ -10,11 +10,9 @@ describe('UpdateAcademyUseCase', () => {
       getAcademyByIdUseCase: null,
     });
 
-    try {
-      await useCase.execute();
-    } catch (error) {
-      expect(error).toBeInstanceOf(ValidationException);
-    }
+    await expect(useCase.execute())
+      .rejects
+      .toThrow(ValidationException);
   });
 
   test('Gera exceção se ocorrer erro na validação #2', async () => {
@@ -23,11 +21,9 @@ describe('UpdateAcademyUseCase', () => {
       getAcademyByIdUseCase: null,
     });
 
-    try {
-      await useCase.execute(1, {});
-    } catch (error) {
-      expect(error).toBeInstanceOf(ValidationException);
-    }
+    await expect(useCase.execute(1, {}))
+      .rejects
+      .toThrow(ValidationException);
   });
 
   test('Gera exceção se academia não existir', async () => {
@@ -42,17 +38,16 @@ describe('UpdateAcademyUseCase', () => {
       getAcademyByIdUseCase: mockGetAcademyByIdUseCase,
     });
 
-    try {
-      await useCase.execute(1, {
-        name: 'Club',
-        subdomain: 'club',
-        address: 'address',
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(NotFoundException);
-      expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledTimes(1);
-      expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
-    }
+    await expect(useCase.execute(1, {
+      name: 'Club',
+      subdomain: 'club',
+      address: 'address',
+    }))
+      .rejects
+      .toThrow(NotFoundException);
+
+    expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
   });
 
   test('Gera exceção se o subdomínio já for utilizado por outra pessoa', async () => {
@@ -69,20 +64,19 @@ describe('UpdateAcademyUseCase', () => {
       getAcademyByIdUseCase: mockGetAcademyByIdUseCase,
     });
 
-    try {
-      await useCase.execute(1, {
-        name: 'Club',
-        subdomain: 'club',
-        address: 'address',
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(AlreadyUsedException);
-      expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledTimes(1);
-      expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
+    await expect(useCase.execute(1, {
+      name: 'Club',
+      subdomain: 'club',
+      address: 'address',
+    }))
+      .rejects
+      .toThrow(AlreadyUsedException);
 
-      expect(mockAcademyRepository.findBySubdomain).toHaveBeenCalledTimes(1);
-      expect(mockAcademyRepository.findBySubdomain).toHaveBeenCalledWith('club');
-    }
+    expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
+
+    expect(mockAcademyRepository.findBySubdomain).toHaveBeenCalledTimes(1);
+    expect(mockAcademyRepository.findBySubdomain).toHaveBeenCalledWith('club');
   });
 
   test('Atualiza a academia se o subdomíno estiver disponível', async () => {

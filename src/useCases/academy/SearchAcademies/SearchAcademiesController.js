@@ -1,5 +1,5 @@
-const SearchAcademiesUseCase = require('./SearchAcademiesUseCase');
 const { getPagination } = require('../../../utils/pagination');
+const SearchAcademiesUseCase = require('./SearchAcademiesUseCase');
 
 class SearchAcademiesController {
   /**

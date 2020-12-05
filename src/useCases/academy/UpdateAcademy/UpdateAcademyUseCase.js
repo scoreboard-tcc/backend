@@ -1,8 +1,8 @@
+const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const validateSchema = require('../../../utils/validation');
-const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
-const UpdateAcademyValidator = require('./UpdateAcademyValidator');
 const GetAcademyByIdUseCase = require('../GetAcademyById/GetAcademyByIdUseCase');
+const UpdateAcademyValidator = require('./UpdateAcademyValidator');
 
 class UpdateAcademyUseCase {
   /**

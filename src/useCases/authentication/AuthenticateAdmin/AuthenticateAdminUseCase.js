@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
+const config = require('../../../config/secrets');
 const AdminRepository = require('../../../repositories/adminRepository');
 const validateSchema = require('../../../utils/validation');
 const AuthenticateAdminValidator = require('./AuthenticateAdminValidator');
-const config = require('../../../config/secrets');
 
 class AuthenticateAdminUseCase {
   /**
@@ -25,9 +25,7 @@ class AuthenticateAdminUseCase {
 
     await this.checkIfCredentiaisAreValid(credentials);
 
-    const token = await this.generateToken(credentials.email);
-
-    return token;
+    return this.generateToken(credentials.email);
   }
 
   async checkIfCredentiaisAreValid(credentials) {

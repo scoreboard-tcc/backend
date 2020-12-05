@@ -10,11 +10,9 @@ describe('CreateAcademyUseCase', () => {
       createCoordinatorUseCase: null,
     });
 
-    try {
-      await useCase.execute({});
-    } catch (error) {
-      expect(error).toBeInstanceOf(ValidationException);
-    }
+    await expect(useCase.execute({}))
+      .rejects
+      .toThrow(ValidationException);
   });
 
   test('Gera exceção se o subdomínio já está sendo utilizado', async () => {
@@ -43,15 +41,13 @@ describe('CreateAcademyUseCase', () => {
       password: '123456',
     };
 
-    try {
-      await useCase.execute({
-        ...academy,
-        scoreboards,
-        coordinator,
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(AlreadyUsedException);
-    }
+    await expect(useCase.execute({
+      ...academy,
+      scoreboards,
+      coordinator,
+    }))
+      .rejects
+      .toThrow(AlreadyUsedException);
   });
 
   test('Cria academia se o subdomínio estiver disponível', async () => {

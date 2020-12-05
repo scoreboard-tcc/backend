@@ -1,10 +1,13 @@
 const jwt = require('jsonwebtoken');
 
+const config = require('../../../config/secrets');
 const BusinessException = require('../../../exceptions/BusinessException');
+const NotFoundException = require('../../../exceptions/NotFoundException');
 const ValidationException = require('../../../exceptions/ValidationException');
 const AuthenticateCoordinatorUseCase = require('./AuthenticateCoordinatorUseCase');
-const config = require('../../../config/secrets');
-const NotFoundException = require('../../../exceptions/NotFoundException');
+
+const email = 'john@doe.com';
+const password = '123456';
 
 describe('AuthenticateCoordinatorUseCase', () => {
   test('Gera exceção se ocorrer erro na validação', async () => {
@@ -12,11 +15,9 @@ describe('AuthenticateCoordinatorUseCase', () => {
       coordinatorRepository: null,
     });
 
-    try {
-      await useCase.execute();
-    } catch (error) {
-      expect(error).toBeInstanceOf(ValidationException);
-    }
+    await expect(useCase.execute())
+      .rejects
+      .toThrow(ValidationException);
   });
 
   test('Gera exceção se não encontrar academia', async () => {
@@ -30,16 +31,15 @@ describe('AuthenticateCoordinatorUseCase', () => {
       getAcademyBySubdomainUseCase: mockGetAcademyBySubdomainUseCase,
     });
 
-    try {
-      await useCase.execute({
-        email: 'john@doe.com',
-        password: '123456',
-        academySubdomain: 'club',
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(NotFoundException);
-      expect(mockGetAcademyBySubdomainUseCase.execute).toHaveBeenCalledWith('club');
-    }
+    await expect(useCase.execute({
+      email: 'john@doe.com',
+      password: '123456',
+      academySubdomain: 'club',
+    }))
+      .rejects
+      .toThrow(NotFoundException);
+
+    expect(mockGetAcademyBySubdomainUseCase.execute).toHaveBeenCalledWith('club');
   });
 
   test('Gera exceção se credenciais forem inválidas', async () => {
@@ -60,17 +60,16 @@ describe('AuthenticateCoordinatorUseCase', () => {
       coordinatorRepository: mockCoordinatorRepository,
     });
 
-    try {
-      await useCase.execute({
-        email: 'john@doe.com',
-        password: '123456',
-        academySubdomain: 'club',
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(BusinessException);
-      expect(mockGetAcademyBySubdomainUseCase.execute).toHaveBeenCalledWith('club');
-      expect(mockCoordinatorRepository.findByAcademyIdAndEmailAndPassword).toHaveBeenCalledWith(1, 'john@doe.com', '123456');
-    }
+    await expect(useCase.execute({
+      email,
+      password,
+      academySubdomain: 'club',
+    }))
+      .rejects
+      .toThrow(BusinessException);
+
+    expect(mockGetAcademyBySubdomainUseCase.execute).toHaveBeenCalledWith('club');
+    expect(mockCoordinatorRepository.findByAcademyIdAndEmailAndPassword).toHaveBeenCalledWith(1, email, password);
   });
 
   test('Retorna token se credenciais forem válidas', async () => {
@@ -96,14 +95,14 @@ describe('AuthenticateCoordinatorUseCase', () => {
     config.jwtSecret = 'secret';
 
     const token = await useCase.execute({
-      email: 'john@doe.com',
-      password: '123456',
+      email,
+      password,
       academySubdomain: 'club',
     });
 
     const decoded = jwt.decode(token);
 
-    expect(decoded.email).toBe('john@doe.com');
+    expect(decoded.email).toBe(email);
     expect(decoded.type).toBe('coordinator');
     expect(decoded.academy).toStrictEqual({
       id: 1,

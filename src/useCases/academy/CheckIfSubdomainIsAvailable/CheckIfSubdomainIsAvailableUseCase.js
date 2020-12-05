@@ -1,5 +1,5 @@
-const validateSchema = require('../../../utils/validation');
 const AcademyRepository = require('../../../repositories/academyRepository');
+const validateSchema = require('../../../utils/validation');
 const CheckIfSubdomainIsAvailableValidator = require('./CheckIfSubdomainIsAvailableValidator');
 
 class CheckIfSubdomainIsAvailableUseCase {

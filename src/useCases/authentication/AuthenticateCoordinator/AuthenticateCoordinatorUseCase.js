@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
-const validateSchema = require('../../../utils/validation');
-const AuthenticateCoordinatorValidator = require('./AuthenticateCoordinatorValidator');
 const config = require('../../../config/secrets');
-const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
 const AcademyRepository = require('../../../repositories/academyRepository');
+const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
+const validateSchema = require('../../../utils/validation');
 const GetAcademyBySubdomainUseCase = require('../../academy/GetAcademyBySubdomain/GetAcademyBySubdomainUseCase');
+const AuthenticateCoordinatorValidator = require('./AuthenticateCoordinatorValidator');
 
 class AuthenticateCoordinatorUseCase {
   /**
@@ -33,9 +33,7 @@ class AuthenticateCoordinatorUseCase {
 
     await this.checkIfCredentiaisAreValid(request, academy.id);
 
-    const token = await this.generateToken(academy, request.email);
-
-    return token;
+    return this.generateToken(academy, request.email);
   }
 
   async checkIfCredentiaisAreValid(credentials, academyId) {

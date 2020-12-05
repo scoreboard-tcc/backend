@@ -8,11 +8,9 @@ describe('GetAcademyBySubdomainUseCase', () => {
       academyRepository: null,
     });
 
-    try {
-      await useCase.execute();
-    } catch (error) {
-      expect(error).toBeInstanceOf(ValidationException);
-    }
+    await expect(useCase.execute())
+      .rejects
+      .toThrow(ValidationException);
   });
 
   test('Gera exceção se não encontrar a academia', async () => {
@@ -24,13 +22,12 @@ describe('GetAcademyBySubdomainUseCase', () => {
       academyRepository: mockAcademyRepository,
     });
 
-    try {
-      await useCase.execute('club');
-    } catch (error) {
-      expect(error).toBeInstanceOf(NotFoundException);
-      expect(mockAcademyRepository.findBySubdomain.mock.calls.length).toBe(1);
-      expect(mockAcademyRepository.findBySubdomain.mock.calls[0][0]).toBe('club');
-    }
+    await expect(useCase.execute('club'))
+      .rejects
+      .toThrow(NotFoundException);
+
+    expect(mockAcademyRepository.findBySubdomain.mock.calls.length).toBe(1);
+    expect(mockAcademyRepository.findBySubdomain.mock.calls[0][0]).toBe('club');
   });
 
   test('Retorna a academia', async () => {

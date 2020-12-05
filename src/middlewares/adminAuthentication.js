@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const config = require('../config/secrets');
 
 /**
  * @param request
@@ -7,9 +8,13 @@ const jwt = require('jsonwebtoken');
  */
 async function adminAuthenticationMiddleware(request, response, next) {
   try {
-    const { Authorization: token } = request.headers;
+    const { authorization: token } = request.headers;
 
-    const user = jwt.verify(token);
+    const user = jwt.verify(token, config.jwtSecret);
+
+    if (user.type !== 'administrator') {
+      throw new Error('');
+    }
 
     response.locals.user = user;
 

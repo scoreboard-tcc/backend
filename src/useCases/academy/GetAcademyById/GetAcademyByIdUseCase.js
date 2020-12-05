@@ -1,8 +1,8 @@
+const NotFoundException = require('../../../exceptions/NotFoundException');
+const AcademyRepository = require('../../../repositories/academyRepository');
 const validateSchema = require('../../../utils/validation');
 
-const AcademyRepository = require('../../../repositories/academyRepository');
 const GetAcademyByIdValidator = require('./GetAcademyByIdValidator');
-const NotFoundException = require('../../../exceptions/NotFoundException');
 
 class GetAcademyByIdUseCase {
   /**
@@ -23,9 +23,7 @@ class GetAcademyByIdUseCase {
   async execute(id) {
     this.validate(id);
 
-    const academy = await this.getAcademy(id);
-
-    return academy;
+    return this.getAcademy(id);
   }
 
   async getAcademy(id) {
