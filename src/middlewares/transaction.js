@@ -20,6 +20,8 @@ async function transactionMiddleware(req, res, next) {
  * @param next
  */
 async function postRequestMiddleware(req, res, next) {
+  console.log('after');
+
   const transaction = asyncLocalStorage.getStore();
 
   if (transaction) await transaction.commit();
