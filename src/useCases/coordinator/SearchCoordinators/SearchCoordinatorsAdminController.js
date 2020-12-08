@@ -15,8 +15,7 @@ class SearchCoordinatorsAdminController {
 
   async handle(request, response) {
     const pagination = getPagination(request);
-    const { id: academyId } = request.params;
-    const { search = '' } = request.query;
+    const { search = '', academyId } = request.query;
 
     const coordinators = await this.searchCoordinatorsUseCase.execute(
       Number(academyId),

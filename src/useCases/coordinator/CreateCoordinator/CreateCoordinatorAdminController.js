@@ -13,8 +13,8 @@ class CreateCoordinatorAdminController {
   }
 
   async handle(request, response) {
-    const { id: academyId } = request.params;
-    const coordinator = await this.createCoordinatorUseCase.execute(academyId, request.body);
+    const { academyId, ...body } = request.body;
+    const coordinator = await this.createCoordinatorUseCase.execute(academyId, body);
 
     return response.status(201).json(coordinator);
   }

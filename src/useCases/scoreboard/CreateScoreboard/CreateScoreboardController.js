@@ -13,8 +13,8 @@ class CreateScoreboardController {
   }
 
   async handle(request, response) {
-    const { id: academyId } = request.params;
-    const scoreboards = await this.createScoreboardUseCase.execute(academyId, request.body);
+    const { academyId, ...body } = request.body;
+    const scoreboards = await this.createScoreboardUseCase.execute(academyId, body);
 
     return response.status(201).json(scoreboards);
   }
