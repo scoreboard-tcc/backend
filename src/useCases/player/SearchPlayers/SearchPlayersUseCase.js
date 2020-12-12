@@ -14,14 +14,25 @@ class SearchPlayersUseCase {
     this.playerRepository = playerRepository;
   }
 
-  validate(name) {
-    validateSchema(SearchPlayersValidator, name);
+  validate(request) {
+    validateSchema(SearchPlayersValidator, request);
   }
 
-  async execute(name, pagination) {
-    this.validate(name);
+  async execute(request, academyId, pagination) {
+    this.validate(request);
 
-    return this.playerRepository.findByName(name, pagination);
+    if (request.onlyFromAcademy) {
+      return this.searchPlayersOnAcademy(academyId, request.search, pagination);
+    }
+    return this.searchPlayersNotOnAcademy(academyId, request.search, pagination);
+  }
+
+  async searchPlayersOnAcademy(academyId, search, pagination) {
+    return this.playerRepository.findByNameAndAcademyId(search, academyId, pagination);
+  }
+
+  async searchPlayersNotOnAcademy(academyId, search, pagination) {
+    return this.playerRepository.findByNameAndNotOnAcademyById(search, academyId, pagination);
   }
 }
 

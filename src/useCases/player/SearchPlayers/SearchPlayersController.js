@@ -14,10 +14,15 @@ class SearchPlayersController {
   }
 
   async handle(request, response) {
+    const { id: academyId } = response.locals.user.academy;
     const pagination = getPagination(request);
-    const { search = '' } = request.query;
 
-    const players = await this.searchPlayersUseCase.execute(search, pagination);
+    const payload = {
+      search: request.query.search,
+      onlyFromAcademy: request.query.onlyFromAcademy === 'true',
+    };
+
+    const players = await this.searchPlayersUseCase.execute(payload, academyId, pagination);
 
     return response.status(200).json(players);
   }
