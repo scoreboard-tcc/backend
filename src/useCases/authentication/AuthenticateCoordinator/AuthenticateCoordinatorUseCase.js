@@ -50,6 +50,7 @@ class AuthenticateCoordinatorUseCase {
         id: academy.id,
         subdomain: academy.subdomain,
         name: academy.name,
+        logoUrl: academy.logoUrl,
       },
       email,
       type: 'coordinator',
