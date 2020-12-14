@@ -1,6 +1,7 @@
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const validateSchema = require('../../../utils/validation');
+const UploadFileUseCase = require('../../utils/UploadFile/UploadFileUseCase');
 const GetAcademyByIdUseCase = require('../GetAcademyById/GetAcademyByIdUseCase');
 const UpdateAcademyValidator = require('./UpdateAcademyValidator');
 
@@ -12,36 +13,40 @@ class UpdateAcademyUseCase {
    * @param {object} container - Container
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
+   * @param {UploadFileUseCase} container.uploadFileUseCase - UploadFileUseCase
    */
-  constructor({ academyRepository, getAcademyByIdUseCase }) {
+  constructor({ academyRepository, getAcademyByIdUseCase, uploadFileUseCase }) {
     this.academyRepository = academyRepository;
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
+    this.uploadFileUseCase = uploadFileUseCase;
   }
 
-  validate(id, academy) {
+  validate(id, request) {
     validateSchema(UpdateAcademyValidator.id, id);
-    validateSchema(UpdateAcademyValidator.academy, academy);
+    validateSchema(UpdateAcademyValidator.academy, request);
   }
 
-  async execute(id, academy) {
-    this.validate(id, academy);
+  async execute(id, request) {
+    this.validate(id, request);
 
     await this.checkIfAcademyExists(id);
-    await this.checkIfSubdomainIsAlreadyUsed(academy.subdomain, id);
+    await this.checkIfSubdomainIsAlreadyUsed(request.subdomain, id);
+
+    const logoUrl = await this.uploadFileUseCase.execute(request.logo);
 
     const payload = {
-      name: academy.name,
-      subdomain: academy.subdomain,
-      address: academy.address,
-      logoUrl: 'https://uilogos.co/img/logomark/hexa.png',
-      additionalInfo: academy.additionalInfo,
+      name: request.name,
+      subdomain: request.subdomain,
+      address: request.address,
+      logoUrl,
+      additionalInfo: request.additionalInfo,
     };
 
     await this.academyRepository.update(id, payload);
   }
 
   async checkIfAcademyExists(id) {
-    await this.getAcademyByIdUseCase.execute(id);
+    return this.getAcademyByIdUseCase.execute(id);
   }
 
   async checkIfSubdomainIsAlreadyUsed(subdomain, academyId) {

@@ -21,4 +21,6 @@ module.exports = Joi.object({
 
   coordinator: CreateCoordinatorValidator
     .required(),
+
+  logo: Joi.any().required(),
 });

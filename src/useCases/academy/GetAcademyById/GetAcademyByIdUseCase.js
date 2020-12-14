@@ -1,3 +1,4 @@
+const firebaseConfig = require('../../../config/firebase');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const validateSchema = require('../../../utils/validation');
@@ -31,7 +32,7 @@ class GetAcademyByIdUseCase {
 
     if (!academy) throw new NotFoundException('Academia', 'id', id);
 
-    return academy;
+    return { ...academy, logoUrl: firebaseConfig.uploadPath + academy.logoUrl };
   }
 }
 

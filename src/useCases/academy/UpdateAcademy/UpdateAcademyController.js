@@ -15,7 +15,12 @@ class UpdateAcademyController {
   async handle(request, response) {
     const academyId = Number(request.params.id);
 
-    await this.updateAcademyUseCase.execute(academyId, request.body);
+    const data = {
+      ...request.body,
+      logo: request.file,
+    };
+
+    await this.updateAcademyUseCase.execute(academyId, data);
 
     return response.status(200).send();
   }

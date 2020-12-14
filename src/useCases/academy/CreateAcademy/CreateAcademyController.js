@@ -17,6 +17,7 @@ class CreateAcademyController {
       ...request.body,
       scoreboards: JSON.parse(request.body.scoreboards),
       coordinator: JSON.parse(request.body.coordinator),
+      logo: request.file,
     };
 
     const academy = await this.createAcademyUseCase.execute(parsedBody);
