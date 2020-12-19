@@ -12,4 +12,8 @@ router.post('/', wrap(async (request, response) => {
   await container.cradle.createMatchController.handle(request, response);
 }));
 
+router.get('/scoreboards', wrap(async (request, response) => {
+  await container.cradle.listScoreboardsWithMatchesController.handle(request, response);
+}));
+
 module.exports = router;

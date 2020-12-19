@@ -72,6 +72,30 @@ class ScoreboardRepository {
 
     return res.present === false;
   }
+
+  async findByAcademyIdWithMatches(academyId) {
+    const pin = '"Match"."pin" is not null as pin';
+
+    const data = await createQuery(tableName)
+      .select('Scoreboard.id', 'Scoreboard.description', 'Match.id as matchId', 'Match.listed', 'Match.publishToken', knexInstance.raw(pin))
+      .leftJoin('Match', function join() {
+        this.on('Scoreboard.id', '=', 'Match.scoreboardId')
+          .andOnVal('Match.status', 'INGAME');
+      })
+      .where('Scoreboard.academyId', '=', academyId)
+      .andWhere('Scoreboard.active', '=', true);
+
+    return data.map((result) => ({
+      id: result.id,
+      description: result.description,
+      match: result.matchId ? {
+        id: result.matchId,
+        listed: result.listed,
+        pin: result.pin,
+        publishToken: result.publishToken,
+      } : null,
+    }));
+  }
 }
 
 module.exports = ScoreboardRepository;
