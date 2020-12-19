@@ -1,3 +1,4 @@
+const { addMinutes } = require('date-fns');
 const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const ValidationException = require('../../../exceptions/ValidationException');
@@ -7,7 +8,7 @@ describe('CreateMatchUseCase', () => {
   test('Gera exceção se ocorrer erro na validação', async () => {
     const useCase = new CreateMatchUseCase({});
 
-    await expect(useCase.execute({}))
+    await expect(useCase.execute(1, {}))
       .rejects
       .toThrow(ValidationException);
   });
@@ -23,8 +24,7 @@ describe('CreateMatchUseCase', () => {
       getAcademyByIdUseCase: mockGetAcademyByIdUseCase,
     });
 
-    await expect(useCase.execute({
-      academyId: 1,
+    await expect(useCase.execute(1, {
       scoreboardId: 1,
       duration: 30,
       player1Id: 1,
@@ -52,8 +52,7 @@ describe('CreateMatchUseCase', () => {
       scoreboardRepository: mockScoreboardRepository,
     });
 
-    await expect(useCase.execute({
-      academyId: 1,
+    await expect(useCase.execute(1, {
       scoreboardId: 1,
       duration: 30,
       player1Id: 1,
@@ -85,8 +84,7 @@ describe('CreateMatchUseCase', () => {
       scoreboardRepository: mockScoreboardRepository,
     });
 
-    await expect(useCase.execute({
-      academyId: 1,
+    await expect(useCase.execute(1, {
       scoreboardId: 1,
       duration: 30,
       player1Id: 1,
@@ -126,8 +124,7 @@ describe('CreateMatchUseCase', () => {
       enrollmentRepository: mockEnrollmentRepository,
     });
 
-    await expect(useCase.execute({
-      academyId: 1,
+    await expect(useCase.execute(1, {
       scoreboardId: 1,
       duration: 30,
       player1Id: 1,
@@ -169,8 +166,7 @@ describe('CreateMatchUseCase', () => {
       enrollmentRepository: mockEnrollmentRepository,
     });
 
-    await expect(useCase.execute({
-      academyId: 1,
+    await expect(useCase.execute(1, {
       scoreboardId: 1,
       duration: 30,
       player2Id: 1,
@@ -207,7 +203,7 @@ describe('CreateMatchUseCase', () => {
     };
 
     const mockMatchRepository = {
-      create: jest.fn(() => {}),
+      create: jest.fn(() => ({ id: 6 })),
     };
 
     const useCase = new CreateMatchUseCase({
@@ -217,13 +213,22 @@ describe('CreateMatchUseCase', () => {
       matchRepository: mockMatchRepository,
     });
 
-    const tokens = await useCase.execute({
-      academyId: 1,
+    const mockDate = new Date();
+    const spy = jest
+      .spyOn(global, 'Date')
+      .mockImplementation(() => mockDate);
+
+    const tokens = await useCase.execute(1, {
       scoreboardId: 1,
       duration: 30,
       player1Id: 1,
       listed: true,
     });
+
+    spy.mockRestore();
+
+    expect(tokens.id).toBe(6);
+    expect(tokens.expiration).toBe(mockDate);
 
     expect(tokens).toHaveProperty('publishToken');
     expect(tokens.publishToken).not.toBeNull();
@@ -264,7 +269,7 @@ describe('CreateMatchUseCase', () => {
     };
 
     const mockMatchRepository = {
-      create: jest.fn(() => {}),
+      create: jest.fn(() => ({ id: 6 })),
     };
 
     const useCase = new CreateMatchUseCase({
@@ -274,14 +279,23 @@ describe('CreateMatchUseCase', () => {
       matchRepository: mockMatchRepository,
     });
 
-    const tokens = await useCase.execute({
-      academyId: 1,
+    const mockDate = new Date();
+    const spy = jest
+      .spyOn(global, 'Date')
+      .mockImplementation(() => mockDate);
+
+    const tokens = await useCase.execute(1, {
       scoreboardId: 1,
       duration: 30,
       player1Id: 1,
       listed: true,
       pin: '1234',
     });
+
+    spy.mockRestore();
+
+    expect(tokens.id).toBe(6);
+    expect(tokens.expiration).toBe(mockDate);
 
     expect(tokens).toHaveProperty('publishToken');
     expect(tokens.publishToken).not.toBeNull();

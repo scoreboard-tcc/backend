@@ -1,3 +1,4 @@
+const { addMinutes } = require('date-fns');
 const { v4: uuid } = require('uuid');
 const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
@@ -102,12 +103,16 @@ class CreateMatchUseCase {
       subscribeToken,
     };
 
-    await this.matchRepository.create(match);
+    const { id } = await this.matchRepository.create(match);
+
+    const tokenExpiration = addMinutes(new Date(), request.duration);
 
     return {
+      id,
       publishToken,
       refreshToken,
       subscribeToken,
+      expiration: tokenExpiration,
     };
   }
 }
