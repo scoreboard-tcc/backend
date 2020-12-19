@@ -31,12 +31,6 @@ exports.up = (knex) => knex.schema
       .notNullable();
 
     table
-      .string('publishToken');
-
-    table
-      .string('refreshToken');
-
-    table
       .string('staticToken')
       .notNullable();
 

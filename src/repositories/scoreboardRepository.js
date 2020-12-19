@@ -1,4 +1,5 @@
 const createQuery = require('../providers/database');
+const { knexInstance } = require('../providers/database');
 
 const tableName = 'Scoreboard';
 
@@ -6,6 +7,14 @@ class ScoreboardRepository {
   async findByIdAndActive(id) {
     return createQuery(tableName)
       .where('id', '=', id)
+      .andWhere('active', '=', true)
+      .first();
+  }
+
+  async findByIdAndAcademyIdAndActive(id, academyId) {
+    return createQuery(tableName)
+      .where('id', '=', id)
+      .andWhere('academyId', '=', academyId)
       .andWhere('active', '=', true)
       .first();
   }
@@ -48,6 +57,20 @@ class ScoreboardRepository {
       .where('active', '=', true)
       .count()
       .first();
+  }
+
+  async checkIfIsAvailable(scorebardId, academyId) {
+    const res = await knexInstance.first(
+      knexInstance.raw(
+        'exists ? as present',
+        createQuery('Match')
+          .where('scoreboardId', '=', scorebardId)
+          .andWhere('academyId', '=', academyId)
+          .andWhere('status', '=', 'INGAME'),
+      ),
+    );
+
+    return res.present === false;
   }
 }
 
