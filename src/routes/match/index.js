@@ -16,4 +16,8 @@ router.get('/scoreboards', wrap(async (request, response) => {
   await container.cradle.listScoreboardsWithMatchesController.handle(request, response);
 }));
 
+router.get('/virtual', wrap(async (request, response) => {
+  await container.cradle.listVirtualMatchesController.handle(request, response);
+}));
+
 module.exports = router;
