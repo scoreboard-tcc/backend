@@ -39,8 +39,10 @@ class CreateMatchUseCase {
 
     await this.getAcademyByIdUseCase.execute(academyId);
 
+    let scoreboard = null;
+
     if (request.scoreboardId) {
-      await this.checkIfScoreboardIsAvailable(request.scoreboardId, academyId);
+      scoreboard = await this.checkIfScoreboardIsAvailable(request.scoreboardId, academyId);
     }
 
     if (request.player1Id) {
@@ -55,10 +57,7 @@ class CreateMatchUseCase {
       this.checkIfPlayersAreNotTheSame(request.player1Id, request.player2Id);
     }
 
-    // eslint-disable-next-line sonarjs/prefer-immediate-return
-    const tokens = await this.createMatch(academyId, request);
-
-    return tokens;
+    return this.createMatch(academyId, request, scoreboard);
   }
 
   async checkIfScoreboardIsAvailable(scoreboardId, academyId) {
@@ -69,6 +68,8 @@ class CreateMatchUseCase {
     const isAvailable = await this.scoreboardRepository.checkIfIsAvailable(scoreboardId, academyId);
 
     if (!isAvailable) throw new BusinessException('O placar não está disponível.');
+
+    return scoreboard;
   }
 
   async checkIfPlayerExists(playerId, academyId) {
@@ -83,7 +84,11 @@ class CreateMatchUseCase {
     }
   }
 
-  async createMatch(academyId, request) {
+  getBrokerTopic(scoreboard) {
+    return scoreboard && scoreboard.serialNumber ? scoreboard.serialNumber : uuid();
+  }
+
+  async createMatch(academyId, request, scoreboard) {
     const publishToken = uuid();
     const refreshToken = uuid();
     const subscribeToken = request.pin ? uuid() : null;
@@ -101,6 +106,7 @@ class CreateMatchUseCase {
       publishToken,
       refreshToken,
       subscribeToken,
+      brokerTopic: this.getBrokerTopic(scoreboard),
     };
 
     const { id } = await this.matchRepository.create(match);

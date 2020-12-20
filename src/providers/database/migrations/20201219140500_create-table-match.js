@@ -28,6 +28,10 @@ exports.up = (knex) => knex.schema
       .inTable('Scoreboard');
 
     table
+      .string('brokerTopic')
+      .notNullable();
+
+    table
       .timestamp('startedAt')
       .defaultTo(knex.fn.now());
 
