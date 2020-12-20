@@ -13,10 +13,22 @@ class MatchRepository {
     const pin = '"Match"."pin" is not null as pin';
 
     return createQuery(tableName)
-      .select('id', 'listed', 'publishToken', createQuery.knexInstance.raw(pin))
+      .select('id', 'listed', createQuery.knexInstance.raw(pin))
       .where('academyId', '=', academyId)
       .whereNull('scoreboardId')
       .andWhere('status', '=', 'INGAME');
+  }
+
+  async findListedInGameMatchesByAcademyId(academyId) {
+    const pin = '"Match"."pin" is not null as pin';
+
+    return createQuery(tableName)
+      .select('Match.id', 'listed', createQuery.knexInstance.raw(pin),
+        'Scoreboard.id as scoreboardId', 'Scoreboard.description as scoreboardDescription')
+      .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
+      .where('academyId', '=', academyId)
+      .andWhere('status', '=', 'INGAME')
+      .andWhere('listed', '=', true);
   }
 }
 

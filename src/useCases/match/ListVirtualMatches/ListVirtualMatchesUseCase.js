@@ -1,5 +1,4 @@
 const MatchRepository = require('../../../repositories/matchRepository');
-const crypto = require('crypto');
 
 class ListVirtualMatchesUseCase {
   /**
@@ -13,25 +12,23 @@ class ListVirtualMatchesUseCase {
     this.matchRepository = matchRepository;
   }
 
-  async execute(academyId, publishTokenHashes = []) {
-    const matches = await this.matchRepository.findIngameVirtualMatchesByAcademyId(academyId);
+  async execute(academyId) {
+    /*
+    - será necessário um mecanismo para avisar aos interessados que o controle do placar mudou
 
-    return this.addControlledByUserAttribute(matches, publishTokenHashes);
-  }
+  - quando cria a partida, inicializa tópico controlSequence em 0
+  - retorna para o coordenadro o controlSequence
+  - o coordenador armazena o controlSequence
 
-  addControlledByUserAttribute(matches, publishTokenHashes) {
-    return matches.map((match) => ({
-      id: match.id,
-      listed: match.listed,
-      pin: match.pin,
-      controlledByCurrentUser: this.checkIfScoreboardIsControlledByUser(match.publishToken, publishTokenHashes),
-    }));
-  }
+  - quando lista as partidas, compara o valor do tópico controlSequence com o controlSequence armazenado para saber se está controlando o placar
 
-  checkIfScoreboardIsControlledByUser(publishToken, publishTokenHashes) {
-    const hashedPublishToken = crypto.createHash('sha1').update(publishToken).digest('hex');
+  - quando trocar o controle da partida, publicar controlSequence incrementado e retornar para o usuário o novo controlSequence
+  - o usuário armazena o novo controlSequence
+  - os demais usuários serão atualizados e não terão mais o controle
 
-    return publishTokenHashes.includes(hashedPublishToken);
+*/
+
+    return this.matchRepository.findIngameVirtualMatchesByAcademyId(academyId);
   }
 }
 

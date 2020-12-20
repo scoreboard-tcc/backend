@@ -1,5 +1,4 @@
 const ListScoreboardWithMatchesUseCase = require('./ListScoreboardsWithMatchesUseCase');
-const crypto = require('crypto');
 
 describe('ListScoreboardsWithMatchesUseCase', () => {
   test('Retorna placares e informações da partida', async () => {
@@ -17,7 +16,6 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
             id: 1,
             listed: true,
             pin: true,
-            publishToken: 'secret',
           },
         },
         {
@@ -27,7 +25,6 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
             id: 2,
             listed: true,
             pin: true,
-            publishToken: 'secret2',
           },
         },
       ]),
@@ -37,12 +34,7 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
       scoreboardRepository: mockScoreboardRepository,
     });
 
-    const publishTokenHashes = [
-      crypto.createHash('sha1').update('secret').digest('hex'),
-      crypto.createHash('sha1').update('secrets2').digest('hex'),
-    ];
-
-    const scoreboards = await useCase.execute(1, publishTokenHashes);
+    const scoreboards = await useCase.execute(1);
 
     expect(scoreboards).toHaveLength(3);
     expect(scoreboards[0]).toStrictEqual({
@@ -58,7 +50,6 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
         id: 1,
         listed: true,
         pin: true,
-        controlledByCurrentUser: true,
       },
     });
 
@@ -69,8 +60,10 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
         id: 2,
         listed: true,
         pin: true,
-        controlledByCurrentUser: false,
       },
     });
+
+    expect(mockScoreboardRepository.findByAcademyIdWithMatches).toHaveBeenCalledTimes(1);
+    expect(mockScoreboardRepository.findByAcademyIdWithMatches).toHaveBeenCalledWith(1);
   });
 });
