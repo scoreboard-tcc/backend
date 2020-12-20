@@ -16,6 +16,8 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
             id: 1,
             listed: true,
             pin: true,
+            brokerTopic: 'abcd',
+            subscribeToken: '1234',
           },
         },
         {
@@ -24,7 +26,9 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
           match: {
             id: 2,
             listed: true,
-            pin: true,
+            pin: false,
+            brokerTopic: 'abcd',
+            subscribeToken: null,
           },
         },
       ]),
@@ -50,6 +54,8 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
         id: 1,
         listed: true,
         pin: true,
+        brokerTopic: 'abcd',
+        subscribeToken: '1234',
       },
     });
 
@@ -59,7 +65,9 @@ describe('ListScoreboardsWithMatchesUseCase', () => {
       match: {
         id: 2,
         listed: true,
-        pin: true,
+        pin: false,
+        brokerTopic: 'abcd',
+        subscribeToken: null,
       },
     });
 

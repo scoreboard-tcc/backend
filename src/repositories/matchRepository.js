@@ -13,7 +13,7 @@ class MatchRepository {
     const pin = '"Match"."pin" is not null as pin';
 
     return createQuery(tableName)
-      .select('id', 'listed', createQuery.knexInstance.raw(pin))
+      .select('id', 'listed', 'brokerTopic', 'subscribeToken', createQuery.knexInstance.raw(pin))
       .where('academyId', '=', academyId)
       .whereNull('scoreboardId')
       .andWhere('status', '=', 'INGAME');

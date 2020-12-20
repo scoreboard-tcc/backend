@@ -8,6 +8,7 @@
     "start": "dotenv node src/server",
     "dev": "dotenv nodemon src/server",
     "migrate:latest": "dotenv knex migrate:latest",
+    "migrate:down": "dotenv knex migrate:down",
     "seed:run": "dotenv knex seed:run",
     "test": "jest"
   },
