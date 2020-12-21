@@ -15,13 +15,12 @@ class ListScoreboardWithMatchesController {
 
   async handle(request, response) {
     const { id: academyId } = response.locals.user.academy;
-    const { publishTokenHashes } = request.params;
 
     if (!academyId) {
       throw new ValidationException('Necessário informar o id da academia');
     }
 
-    const scoreboards = await this.listScoreboardsWithMatchesUseCase.execute(academyId, publishTokenHashes);
+    const scoreboards = await this.listScoreboardsWithMatchesUseCase.execute(academyId);
 
     return response.status(200).json(scoreboards);
   }

@@ -15,13 +15,12 @@ class ListVirtualMatchesController {
 
   async handle(request, response) {
     const { id: academyId } = response.locals.user.academy;
-    const { publishTokenHashes } = request.params;
 
     if (!academyId) {
       throw new ValidationException('Necessário informar o id da academia');
     }
 
-    const scoreboards = await this.listVirtualMatchesUseCase.execute(academyId, publishTokenHashes);
+    const scoreboards = await this.listVirtualMatchesUseCase.execute(academyId);
 
     return response.status(200).json(scoreboards);
   }
