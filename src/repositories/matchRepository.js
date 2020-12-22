@@ -40,6 +40,18 @@ class MatchRepository {
       } : null,
     }));
   }
+
+  async findByRefreshToken(refreshToken) {
+    return createQuery(tableName)
+      .where('refreshToken', '=', refreshToken)
+      .first();
+  }
+
+  async updateTokens(id, { publishToken, refreshToken }) {
+    return createQuery(tableName)
+      .update({ publishToken, refreshToken })
+      .where('id', '=', id);
+  }
 }
 
 module.exports = MatchRepository;

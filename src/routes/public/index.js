@@ -12,4 +12,8 @@ router.get('/getMatchesByAcademyId/:academyId', wrap(async (request, response) =
   await container.cradle.listPublicMatchesController.handle(request, response);
 }));
 
+router.get('/changeControl', wrap(async (request, response) => {
+  await container.cradle.changeControlController.handle(request, response);
+}));
+
 module.exports = router;
