@@ -52,6 +52,13 @@ class MatchRepository {
       .update({ publishToken, refreshToken })
       .where('id', '=', id);
   }
+
+  async findByAcademyIdAndMatchId(academyId, matchId) {
+    return createQuery(tableName)
+      .where('academyId', '=', academyId)
+      .andWhere('matchId', '=', matchId)
+      .first();
+  }
 }
 
 module.exports = MatchRepository;

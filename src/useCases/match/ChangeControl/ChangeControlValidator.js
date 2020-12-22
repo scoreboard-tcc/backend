@@ -1,3 +1,3 @@
 const Joi = require('joi');
 
-module.exports = J Joi.string().required();
+module.exports = Joi.string().required();

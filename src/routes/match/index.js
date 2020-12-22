@@ -20,4 +20,8 @@ router.get('/virtual', wrap(async (request, response) => {
   await container.cradle.listVirtualMatchesController.handle(request, response);
 }));
 
+router.post('/takeControl', wrap(async (request, response) => {
+  await container.cradle.takeControlController.handle(request, response);
+}));
+
 module.exports = router;
