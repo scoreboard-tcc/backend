@@ -26,7 +26,7 @@ class MatchRepository {
       .select('Match.id', 'Match.brokerTopic', createQuery.knexInstance.raw(pin),
         'Scoreboard.id as scoreboardId', 'Scoreboard.description as scoreboardDescription')
       .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
-      .where('academyId', '=', academyId)
+      .where('Match.academyId', '=', academyId)
       .andWhere('status', '=', 'INGAME')
       .andWhere('Match.listed', '=', true);
 

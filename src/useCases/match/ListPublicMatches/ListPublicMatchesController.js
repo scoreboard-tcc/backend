@@ -20,7 +20,7 @@ class ListPublicMatchesController {
       throw new ValidationException('Necessário informar o id da academia');
     }
 
-    const scoreboards = await this.listPublicMatchesUseCase.execute(academyId);
+    const scoreboards = await this.listPublicMatchesUseCase.execute(Number(academyId));
 
     return response.status(200).json(scoreboards);
   }
