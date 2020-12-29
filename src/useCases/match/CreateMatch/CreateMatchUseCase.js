@@ -2,6 +2,7 @@ const { addMinutes } = require('date-fns');
 const { v4: uuid } = require('uuid');
 const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
+const { broker } = require('../../../providers/mqtt');
 const EnrollmentRepository = require('../../../repositories/enrollmentRepository');
 const MatchRepository = require('../../../repositories/matchRepository');
 const ScoreboardRepository = require('../../../repositories/scoreboardRepository');
@@ -116,6 +117,8 @@ class CreateMatchUseCase {
 
     const tokenExpiration = addMinutes(new Date(), request.duration);
 
+    this.publishInitialData(match.brokerTopic);
+
     return {
       id,
       publishToken,
@@ -123,6 +126,29 @@ class CreateMatchUseCase {
       subscribeToken,
       expiration: tokenExpiration,
     };
+  }
+
+  async publishInitialData(brokerTopic) {
+    const topics = [
+      'Set1_A',
+      'Set1_B',
+      'Set2_A',
+      'Set2_B',
+      'Set3_A',
+      'Set3_B',
+      'Score_A',
+      'Score_B',
+      'Current_Set',
+      'SetsWon_A',
+      'SetsWon_B',
+      'Player_Serving'];
+
+    topics.forEach((topic) => broker.publish({
+      topic: `${brokerTopic}/${topic}`,
+      payload: Buffer.from('0'),
+      qos: 1,
+      retain: true,
+    }));
   }
 }
 
