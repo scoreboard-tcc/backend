@@ -1,23 +1,30 @@
 const Joi = require('joi');
 
 module.exports = Joi.object({
-  scoreboardId: Joi.number(),
+  scoreboardId: Joi.number().allow(null),
 
   duration: Joi.number()
     .min(15)
     .max(60 * 5)
     .required(),
 
-  player1Id: Joi.number(),
+  player1Id: Joi.number().allow(null),
 
-  player2Id: Joi.number(),
+  player2Id: Joi.number().allow(null),
 
-  player1Name: Joi.string(),
+  player1Name: Joi.string().allow(null),
 
-  player2Name: Joi.string(),
+  player2Name: Joi.string().allow(null),
 
   listed: Joi.boolean()
     .required(),
 
-  pin: Joi.string(),
+  pin: Joi.string().allow(''),
+
+  tieBreakType: Joi.valid('REGULAR', 'TEN_POINTS').required(),
+
+  scoringType: Joi.valid('BASIC', 'ADVANCED').required(),
+
+  hasAdvantage: Joi.boolean().required(),
+
 }).required();

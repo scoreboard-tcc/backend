@@ -81,6 +81,17 @@ exports.up = (knex) => knex.schema
     table
       .string('subscribeToken');
 
+    table
+      .enu('tieBreakType', ['REGULAR', 'TEN_POINTS'])
+      .notNullable();
+
+    table
+      .enu('scoringType', ['BASIC', 'ADVANCED'])
+      .notNullable();
+
+    table.boolean('hasAdvantage')
+      .notNullable();
+
     // TODO: estado da partida (pontuação)
   });
 

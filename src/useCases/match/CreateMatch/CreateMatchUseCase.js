@@ -80,7 +80,7 @@ class CreateMatchUseCase {
 
   checkIfPlayersAreNotTheSame(player1Id, player2Id) {
     if (player1Id === player2Id) {
-      throw new BusinessException('O jogador deve ser diferente do jogador 2.');
+      throw new BusinessException('O jogador 1 deve ser diferente do jogador 2.');
     }
   }
 
@@ -107,6 +107,9 @@ class CreateMatchUseCase {
       refreshToken,
       subscribeToken,
       brokerTopic: this.getBrokerTopic(scoreboard),
+      tieBreakType: request.tieBreakType,
+      scoringType: request.scoringType,
+      hasAdvantage: request.hasAdvantage,
     };
 
     const { id } = await this.matchRepository.create(match);
