@@ -10,6 +10,14 @@ class PlayerRepository {
       .first();
   }
 
+  async findByIdAndAcademyId(id, academyId) {
+    return createQuery(tableName)
+      .innerJoin('Enrollment', 'Player.id', 'Enrollment.playerId')
+      .where('id', '=', id)
+      .andWhere('Enrollment.academyId', '=', academyId)
+      .first();
+  }
+
   async findByEmail(email) {
     return createQuery(tableName)
       .where('email', '=', email)
@@ -42,7 +50,6 @@ class PlayerRepository {
   }
 
   async create(player) {
-    console.log({ player });
     return createQuery(tableName)
       .insert(player)
       .returning('id');

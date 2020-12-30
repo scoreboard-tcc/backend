@@ -77,7 +77,7 @@ class ScoreboardRepository {
     const pin = '"Match"."pin" is not null as pin';
 
     const data = await createQuery(tableName)
-      .select('Scoreboard.id', 'Scoreboard.description', 'Match.id as matchId', 'Match.listed', 'Match.brokerTopic', 'Match.subscribeToken', knexInstance.raw(pin))
+      .select('Scoreboard.id', 'Scoreboard.description', 'Match.id as matchId', 'Match.listed', 'Match.brokerTopic', 'Match.subscribeToken', 'Match.player1Name', 'Match.player2Name', knexInstance.raw(pin))
       .leftJoin('Match', function join() {
         this.on('Scoreboard.id', '=', 'Match.scoreboardId')
           .andOnVal('Match.status', 'INGAME');
@@ -94,6 +94,8 @@ class ScoreboardRepository {
         pin: result.pin,
         brokerTopic: result.brokerTopic,
         subscribeToken: result.subscribeToken,
+        player1Name: result.player1Name,
+        player2Name: result.player2Name,
       } : null,
     }));
   }

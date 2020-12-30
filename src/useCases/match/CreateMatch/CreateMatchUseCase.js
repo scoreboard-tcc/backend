@@ -5,7 +5,9 @@ const NotFoundException = require('../../../exceptions/NotFoundException');
 const { broker } = require('../../../providers/mqtt');
 const EnrollmentRepository = require('../../../repositories/enrollmentRepository');
 const MatchRepository = require('../../../repositories/matchRepository');
+const PlayerRepository = require('../../../repositories/playerRepository');
 const ScoreboardRepository = require('../../../repositories/scoreboardRepository');
+const { isEmpty } = require('../../../utils/string');
 
 const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
@@ -20,15 +22,17 @@ class CreateMatchUseCase {
    * @param {ScoreboardRepository} container.scoreboardRepository - ScoreboardRepository
    * @param {EnrollmentRepository} container.enrollmentRepository - EnrollmentRepository
    * @param {MatchRepository} container.matchRepository - MatchRepository
+   * @param {PlayerRepository} container.playerRepository - PlayerRepository
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    */
   constructor({
-    getAcademyByIdUseCase, scoreboardRepository, enrollmentRepository, matchRepository,
+    getAcademyByIdUseCase, scoreboardRepository, enrollmentRepository, matchRepository, playerRepository,
   }) {
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.scoreboardRepository = scoreboardRepository;
     this.enrollmentRepository = enrollmentRepository;
     this.matchRepository = matchRepository;
+    this.playerRepository = playerRepository;
   }
 
   validate(request) {
@@ -89,10 +93,24 @@ class CreateMatchUseCase {
     return scoreboard && scoreboard.serialNumber ? scoreboard.serialNumber : uuid();
   }
 
+  async getPlayerName(playerId, playerName, academyId) {
+    if (!playerId) {
+      return playerName;
+    }
+
+    const player = await this.playerRepository.findByIdAndAcademyId(playerId, academyId);
+
+    if (!player) {
+      throw new NotFoundException('Jogador', 'id', playerId);
+    }
+
+    return player.name;
+  }
+
   async createMatch(academyId, request, scoreboard) {
     const publishToken = uuid();
     const refreshToken = uuid();
-    const subscribeToken = request.pin ? uuid() : null;
+    const subscribeToken = !isEmpty(request.pin) ? uuid() : null;
 
     const match = {
       academyId,
@@ -100,10 +118,10 @@ class CreateMatchUseCase {
       duration: request.duration,
       player1Id: request.player1Id,
       player2Id: request.player2Id,
-      player1Name: request.player1Id ? '' : request.player1Name,
-      player2Name: request.player2Id ? '' : request.player2Name,
+      player1Name: await this.getPlayerName(request.player1Id, request.player1Name, academyId),
+      player2Name: await this.getPlayerName(request.player2Id, request.player2Name, academyId),
       listed: request.listed,
-      pin: request.pin,
+      pin: isEmpty(request.pin) ? null : request.pin,
       publishToken,
       refreshToken,
       subscribeToken,
@@ -140,8 +158,7 @@ class CreateMatchUseCase {
       'Score_B',
       'Current_Set',
       'SetsWon_A',
-      'SetsWon_B',
-      'Player_Serving'];
+      'SetsWon_B'];
 
     topics.forEach((topic) => broker.publish({
       topic: `${brokerTopic}/${topic}`,
@@ -149,6 +166,13 @@ class CreateMatchUseCase {
       qos: 1,
       retain: true,
     }));
+
+    broker.publish({
+      topic: `${brokerTopic}/Player_Serving`,
+      payload: Buffer.from('A'),
+      qos: 1,
+      retain: true,
+    });
   }
 }
 

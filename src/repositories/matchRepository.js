@@ -13,7 +13,7 @@ class MatchRepository {
     const pin = '"Match"."pin" is not null as pin';
 
     return createQuery(tableName)
-      .select('id', 'listed', 'brokerTopic', 'subscribeToken', createQuery.knexInstance.raw(pin))
+      .select('id', 'listed', 'brokerTopic', 'subscribeToken', 'player1Name', 'player2Name', createQuery.knexInstance.raw(pin))
       .where('academyId', '=', academyId)
       .whereNull('scoreboardId')
       .andWhere('status', '=', 'INGAME');
@@ -24,7 +24,7 @@ class MatchRepository {
 
     const data = await createQuery(tableName)
       .select('Match.id', 'Match.brokerTopic', createQuery.knexInstance.raw(pin),
-        'Scoreboard.id as scoreboardId', 'Scoreboard.description as scoreboardDescription')
+        'Scoreboard.id as scoreboardId', 'Scoreboard.description as scoreboardDescription', 'Match.player1Name', 'Match.player2Name')
       .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
       .where('Match.academyId', '=', academyId)
       .andWhere('status', '=', 'INGAME')
@@ -34,6 +34,8 @@ class MatchRepository {
       id: result.id,
       brokerTopic: result.pin ? null : result.brokerTopic,
       pin: result.pin,
+      player1Name: result.player1Name,
+      player2Name: result.player2Name,
       scoreboard: result.scoreboardId ? {
         id: result.scoreboardId,
         description: result.scoreboardDescription,
