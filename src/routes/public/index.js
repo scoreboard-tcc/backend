@@ -16,4 +16,8 @@ router.get('/changeControl', wrap(async (request, response) => {
   await container.cradle.changeControlController.handle(request, response);
 }));
 
+router.get('/getMatchById/:matchId', wrap(async (request, response) => {
+  await container.cradle.getMatchByIdController.handle(request, response);
+}));
+
 module.exports = router;

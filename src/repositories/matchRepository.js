@@ -63,16 +63,23 @@ class MatchRepository {
   }
 
   async findByMatchIdAndIngame(matchId) {
-    const hasPin = '"Match"."pin" is not null as pin';
+    const pin = '"Match"."pin" is not null as pin';
 
     const data = await createQuery(tableName)
-      .select('id', 'player1Name', 'player2Name', 'brokerTopic')
-      .where('matchId', '=', matchId)
+      .select('id', 'player1Name', 'player2Name', 'brokerTopic', createQuery.knexInstance.raw(pin))
+      .where('id', '=', matchId)
       .andWhere('status', '=', 'INGAME')
       .first();
 
-    if (hasPin) {
-      delete data.brokerTopic;
+    if (!data) {
+      return null;
+    }
+
+    if (data.pin) {
+      return {
+        ...data,
+        brokerTopic: null,
+      };
     }
 
     return data;
