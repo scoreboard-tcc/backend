@@ -2,6 +2,7 @@ const aedes = require('aedes');
 const aedesPersistenceMongoDB = require('aedes-persistence-mongodb');
 const ws = require('websocket-stream');
 const brokerConfig = require('../../config/broker');
+const authorizePublish = require('./authorizePublish');
 const http = require('http');
 const net = require('net');
 
@@ -12,6 +13,8 @@ const broker = aedes({
     },
   ),
 });
+
+broker.authorizePublish = authorizePublish;
 
 const httpServer = http.createServer();
 
