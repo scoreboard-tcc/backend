@@ -66,7 +66,7 @@ class MatchRepository {
     const pin = '"Match"."pin" is not null as pin';
 
     const data = await createQuery(tableName)
-      .select('id', 'player1Name', 'player2Name', 'brokerTopic', createQuery.knexInstance.raw(pin))
+      .select('id', 'player1Name', 'player2Name', 'brokerTopic', 'startedAt', createQuery.knexInstance.raw(pin))
       .where('id', '=', matchId)
       .andWhere('status', '=', 'INGAME')
       .first();
