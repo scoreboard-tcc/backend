@@ -9,14 +9,12 @@ describe('ListVirtualMatchesUseCase', () => {
           listed: true,
           pin: true,
           brokerTopic: 'abcd',
-          subscribeToken: '1234',
         },
         {
           id: 2,
           listed: true,
           pin: false,
           brokerTopic: 'abcd',
-          subscribeToken: null,
         },
       ]),
     };
@@ -33,7 +31,6 @@ describe('ListVirtualMatchesUseCase', () => {
       listed: true,
       pin: true,
       brokerTopic: 'abcd',
-      subscribeToken: '1234',
     });
 
     expect(scoreboards[1]).toStrictEqual({
@@ -41,7 +38,6 @@ describe('ListVirtualMatchesUseCase', () => {
       listed: true,
       pin: false,
       brokerTopic: 'abcd',
-      subscribeToken: null,
     });
 
     expect(mockMatchRepository.findIngameVirtualMatchesByAcademyId).toHaveBeenCalledTimes(1);

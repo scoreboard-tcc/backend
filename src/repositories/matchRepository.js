@@ -13,7 +13,7 @@ class MatchRepository {
     const pin = '"Match"."pin" is not null as pin';
 
     return createQuery(tableName)
-      .select('id', 'listed', 'brokerTopic', 'subscribeToken', 'player1Name', 'player2Name', createQuery.knexInstance.raw(pin))
+      .select('id', 'listed', 'brokerTopic', 'player1Name', 'player2Name', createQuery.knexInstance.raw(pin))
       .where('academyId', '=', academyId)
       .whereNull('scoreboardId')
       .andWhere('status', '=', 'INGAME');
@@ -60,6 +60,22 @@ class MatchRepository {
       .where('academyId', '=', academyId)
       .andWhere('matchId', '=', matchId)
       .first();
+  }
+
+  async findByMatchIdAndIngame(matchId) {
+    const hasPin = '"Match"."pin" is not null as pin';
+
+    const data = await createQuery(tableName)
+      .select('id', 'player1Name', 'player2Name', 'brokerTopic')
+      .where('matchId', '=', matchId)
+      .andWhere('status', '=', 'INGAME')
+      .first();
+
+    if (hasPin) {
+      delete data.brokerTopic;
+    }
+
+    return data;
   }
 }
 

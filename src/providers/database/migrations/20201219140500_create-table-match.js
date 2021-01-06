@@ -79,9 +79,6 @@ exports.up = (knex) => knex.schema
       .notNullable();
 
     table
-      .string('subscribeToken');
-
-    table
       .enu('tieBreakType', ['REGULAR', 'TEN_POINTS'])
       .notNullable();
 

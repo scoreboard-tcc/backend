@@ -44,10 +44,8 @@ class CreateMatchUseCase {
 
     await this.getAcademyByIdUseCase.execute(academyId);
 
-    let scoreboard = null;
-
     if (request.scoreboardId) {
-      scoreboard = await this.checkIfScoreboardIsAvailable(request.scoreboardId, academyId);
+      await this.checkIfScoreboardIsAvailable(request.scoreboardId, academyId);
     }
 
     if (request.player1Id) {
@@ -62,7 +60,7 @@ class CreateMatchUseCase {
       this.checkIfPlayersAreNotTheSame(request.player1Id, request.player2Id);
     }
 
-    return this.createMatch(academyId, request, scoreboard);
+    return this.createMatch(academyId, request);
   }
 
   async checkIfScoreboardIsAvailable(scoreboardId, academyId) {
@@ -89,10 +87,6 @@ class CreateMatchUseCase {
     }
   }
 
-  getBrokerTopic(scoreboard) {
-    return scoreboard && scoreboard.serialNumber ? scoreboard.serialNumber : uuid();
-  }
-
   async getPlayerName(playerId, playerName, academyId) {
     if (!playerId) {
       return playerName;
@@ -107,10 +101,9 @@ class CreateMatchUseCase {
     return player.name;
   }
 
-  async createMatch(academyId, request, scoreboard) {
+  async createMatch(academyId, request) {
     const publishToken = uuid();
     const refreshToken = uuid();
-    const subscribeToken = !isEmpty(request.pin) ? uuid() : null;
 
     const match = {
       academyId,
@@ -124,8 +117,7 @@ class CreateMatchUseCase {
       pin: isEmpty(request.pin) ? null : request.pin,
       publishToken,
       refreshToken,
-      subscribeToken,
-      brokerTopic: this.getBrokerTopic(scoreboard),
+      brokerTopic: uuid(),
       tieBreakType: request.tieBreakType,
       scoringType: request.scoringType,
       hasAdvantage: request.hasAdvantage,
@@ -141,7 +133,6 @@ class CreateMatchUseCase {
       id,
       publishToken,
       refreshToken,
-      subscribeToken,
       expiration: tokenExpiration,
     };
   }

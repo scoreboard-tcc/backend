@@ -1,4 +1,3 @@
-const { v4: uuid } = require('uuid');
 const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const ValidationException = require('../../../exceptions/ValidationException');
@@ -32,6 +31,9 @@ describe('CreateMatchUseCase', () => {
       player1Id: 1,
       player2Id: 2,
       listed: true,
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     }))
       .rejects
       .toThrow(NotFoundException);
@@ -60,6 +62,9 @@ describe('CreateMatchUseCase', () => {
       player1Id: 1,
       player2Id: 2,
       listed: true,
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     }))
       .rejects
       .toThrow(NotFoundException);
@@ -92,6 +97,9 @@ describe('CreateMatchUseCase', () => {
       player1Id: 1,
       player2Id: 2,
       listed: true,
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     }))
       .rejects
       .toThrowError(new BusinessException('O placar não está disponível.'));
@@ -131,6 +139,9 @@ describe('CreateMatchUseCase', () => {
       duration: 30,
       player1Id: 1,
       listed: true,
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     }))
       .rejects
       .toThrowError(new BusinessException('Um ou mais jogadores não estão matriculados na academia'));
@@ -173,6 +184,9 @@ describe('CreateMatchUseCase', () => {
       duration: 30,
       player2Id: 1,
       listed: true,
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     }))
       .rejects
       .toThrowError(new BusinessException('Um ou mais jogadores não estão matriculados na academia'));
@@ -208,11 +222,16 @@ describe('CreateMatchUseCase', () => {
       create: jest.fn(() => ({ id: 6 })),
     };
 
+    const mockPlayerRepository = {
+      findByIdAndAcademyId: jest.fn(() => ({ id: 1, name: 'John' })),
+    };
+
     const useCase = new CreateMatchUseCase({
       getAcademyByIdUseCase: mockGetAcademyByIdUseCase,
       scoreboardRepository: mockScoreboardRepository,
       enrollmentRepository: mockEnrollmentRepository,
       matchRepository: mockMatchRepository,
+      playerRepository: mockPlayerRepository,
     });
 
     const mockDate = new Date();
@@ -225,6 +244,9 @@ describe('CreateMatchUseCase', () => {
       duration: 30,
       player1Id: 1,
       listed: true,
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     });
 
     spy.mockRestore();
@@ -237,9 +259,6 @@ describe('CreateMatchUseCase', () => {
 
     expect(tokens).toHaveProperty('refreshToken');
     expect(tokens.refreshToken).not.toBeNull();
-
-    expect(tokens).toHaveProperty('subscribeToken');
-    expect(tokens.subscribeToken).toBeNull();
 
     expect(mockGetAcademyByIdUseCase.execute).toBeCalledTimes(1);
     expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
@@ -254,6 +273,9 @@ describe('CreateMatchUseCase', () => {
     expect(mockEnrollmentRepository.findByAcademyIdAndPlayerId).toHaveBeenCalledWith(1, 1);
 
     expect(mockMatchRepository.create).toHaveBeenCalledTimes(1);
+
+    expect(mockPlayerRepository.findByIdAndAcademyId).toHaveBeenCalledTimes(1);
+    expect(mockPlayerRepository.findByIdAndAcademyId).toHaveBeenCalledWith(1, 1);
   });
 
   test('Cria a partida com o pin', async () => {
@@ -274,11 +296,16 @@ describe('CreateMatchUseCase', () => {
       create: jest.fn(() => ({ id: 6 })),
     };
 
+    const mockPlayerRepository = {
+      findByIdAndAcademyId: jest.fn(() => ({ id: 1, name: 'John' })),
+    };
+
     const useCase = new CreateMatchUseCase({
       getAcademyByIdUseCase: mockGetAcademyByIdUseCase,
       scoreboardRepository: mockScoreboardRepository,
       enrollmentRepository: mockEnrollmentRepository,
       matchRepository: mockMatchRepository,
+      playerRepository: mockPlayerRepository,
     });
 
     const mockDate = new Date();
@@ -292,6 +319,9 @@ describe('CreateMatchUseCase', () => {
       player1Id: 1,
       listed: true,
       pin: '1234',
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     });
 
     spy.mockRestore();
@@ -304,9 +334,6 @@ describe('CreateMatchUseCase', () => {
 
     expect(tokens).toHaveProperty('refreshToken');
     expect(tokens.refreshToken).not.toBeNull();
-
-    expect(tokens).toHaveProperty('subscribeToken');
-    expect(tokens.subscribeToken).not.toBeNull();
 
     expect(mockGetAcademyByIdUseCase.execute).toBeCalledTimes(1);
     expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
@@ -321,88 +348,9 @@ describe('CreateMatchUseCase', () => {
     expect(mockEnrollmentRepository.findByAcademyIdAndPlayerId).toHaveBeenCalledWith(1, 1);
 
     expect(mockMatchRepository.create).toHaveBeenCalledTimes(1);
-  });
 
-  test('Cria a partida utilizando o serialNumber do placar como tópico', async () => {
-    const mockGetAcademyByIdUseCase = {
-      execute: jest.fn(() => ({ id: 1 })),
-    };
-
-    const mockScoreboardRepository = {
-      findByIdAndAcademyIdAndActive: jest.fn(() => ({ id: 1, serialNumber: 'abcd' })),
-      checkIfIsAvailable: jest.fn(() => true),
-    };
-
-    const mockEnrollmentRepository = {
-      findByAcademyIdAndPlayerId: jest.fn(() => ({ playerId: 1 })),
-    };
-
-    const mockMatchRepository = {
-      create: jest.fn(() => ({ id: 6 })),
-    };
-
-    const useCase = new CreateMatchUseCase({
-      getAcademyByIdUseCase: mockGetAcademyByIdUseCase,
-      scoreboardRepository: mockScoreboardRepository,
-      enrollmentRepository: mockEnrollmentRepository,
-      matchRepository: mockMatchRepository,
-    });
-
-    const mockDate = new Date();
-    const spy = jest
-      .spyOn(global, 'Date')
-      .mockImplementation(() => mockDate);
-
-    const tokens = await useCase.execute(1, {
-      scoreboardId: 1,
-      duration: 30,
-      player1Id: 1,
-      listed: true,
-      pin: '1234',
-    });
-
-    spy.mockRestore();
-
-    expect(tokens.id).toBe(6);
-    expect(tokens.expiration).toBe(mockDate);
-
-    expect(tokens).toHaveProperty('publishToken');
-    expect(tokens.publishToken).not.toBeNull();
-
-    expect(tokens).toHaveProperty('refreshToken');
-    expect(tokens.refreshToken).not.toBeNull();
-
-    expect(tokens).toHaveProperty('subscribeToken');
-    expect(tokens.subscribeToken).not.toBeNull();
-
-    expect(mockGetAcademyByIdUseCase.execute).toBeCalledTimes(1);
-    expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
-
-    expect(mockScoreboardRepository.findByIdAndAcademyIdAndActive).toBeCalledTimes(1);
-    expect(mockScoreboardRepository.findByIdAndAcademyIdAndActive).toHaveBeenCalledWith(1, 1);
-
-    expect(mockScoreboardRepository.checkIfIsAvailable).toBeCalledTimes(1);
-    expect(mockScoreboardRepository.checkIfIsAvailable).toHaveBeenCalledWith(1, 1);
-
-    expect(mockEnrollmentRepository.findByAcademyIdAndPlayerId).toHaveBeenCalledTimes(1);
-    expect(mockEnrollmentRepository.findByAcademyIdAndPlayerId).toHaveBeenCalledWith(1, 1);
-
-    expect(mockMatchRepository.create).toHaveBeenCalledTimes(1);
-    expect(mockMatchRepository.create).toHaveBeenCalledWith({
-      academyId: 1,
-      scoreboardId: 1,
-      duration: 30,
-      player1Id: 1,
-      player2Id: undefined,
-      player1Name: '',
-      player2Name: undefined,
-      listed: true,
-      pin: '1234',
-      publishToken: '00000000-0000-0000-0000-000000000000',
-      refreshToken: '00000000-0000-0000-0000-000000000000',
-      subscribeToken: '00000000-0000-0000-0000-000000000000',
-      brokerTopic: 'abcd',
-    });
+    expect(mockPlayerRepository.findByIdAndAcademyId).toHaveBeenCalledTimes(1);
+    expect(mockPlayerRepository.findByIdAndAcademyId).toHaveBeenCalledWith(1, 1);
   });
 
   test('Cria a partida sem placar', async () => {
@@ -418,10 +366,15 @@ describe('CreateMatchUseCase', () => {
       create: jest.fn(() => ({ id: 6 })),
     };
 
+    const mockPlayerRepository = {
+      findByIdAndAcademyId: jest.fn(() => ({ id: 1, name: 'John' })),
+    };
+
     const useCase = new CreateMatchUseCase({
       getAcademyByIdUseCase: mockGetAcademyByIdUseCase,
       enrollmentRepository: mockEnrollmentRepository,
       matchRepository: mockMatchRepository,
+      playerRepository: mockPlayerRepository,
     });
 
     const mockDate = new Date();
@@ -434,6 +387,9 @@ describe('CreateMatchUseCase', () => {
       player1Id: 1,
       listed: true,
       pin: '1234',
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
     });
 
     spy.mockRestore();
@@ -447,9 +403,6 @@ describe('CreateMatchUseCase', () => {
     expect(tokens).toHaveProperty('refreshToken');
     expect(tokens.refreshToken).not.toBeNull();
 
-    expect(tokens).toHaveProperty('subscribeToken');
-    expect(tokens.subscribeToken).not.toBeNull();
-
     expect(mockGetAcademyByIdUseCase.execute).toBeCalledTimes(1);
     expect(mockGetAcademyByIdUseCase.execute).toHaveBeenCalledWith(1);
 
@@ -462,14 +415,20 @@ describe('CreateMatchUseCase', () => {
       duration: 30,
       player1Id: 1,
       player2Id: undefined,
-      player1Name: '',
+      player1Name: 'John',
       player2Name: undefined,
       listed: true,
       pin: '1234',
       publishToken: '00000000-0000-0000-0000-000000000000',
       refreshToken: '00000000-0000-0000-0000-000000000000',
-      subscribeToken: '00000000-0000-0000-0000-000000000000',
       brokerTopic: '00000000-0000-0000-0000-000000000000',
+      tieBreakType: 'REGULAR',
+      scoringType: 'BASIC',
+      hasAdvantage: true,
+      scoreboardId: undefined,
     });
+
+    expect(mockPlayerRepository.findByIdAndAcademyId).toHaveBeenCalledTimes(1);
+    expect(mockPlayerRepository.findByIdAndAcademyId).toHaveBeenCalledWith(1, 1);
   });
 });
