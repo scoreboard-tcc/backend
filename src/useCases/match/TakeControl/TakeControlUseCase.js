@@ -2,6 +2,7 @@ const { v4: uuid } = require('uuid');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const MatchRepository = require('../../../repositories/matchRepository');
 const validateSchema = require('../../../utils/validation');
+const IncrementControllerSequenceUseCase = require('../IncrementControllerSequence/IncrementControllerSequenceUseCase');
 const TakeControlValidator = require('./TakeControlValidator');
 
 class TakeControlUseCase {
@@ -10,12 +11,14 @@ class TakeControlUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {IncrementControllerSequenceUseCase} container.incrementControllerSequenceUseCase - IncrementControllerSequenceUseCase
    * @param {MatchRepository} container.matchRepository - MatchRepository
    */
   constructor({
-    matchRepository,
+    matchRepository, incrementControllerSequenceUseCase,
   }) {
     this.matchRepository = matchRepository;
+    this.incrementControllerSequenceUseCase = incrementControllerSequenceUseCase;
   }
 
   validate(matchId) {
@@ -50,11 +53,10 @@ class TakeControlUseCase {
   }
 
   async getControllerSequence(match) {
-    // TODO: pegar valor do tópico no broker
-    // incrementar valor
-    // publicar valor incrementado
-    // retornar valor incrementado
-    return 0;
+    return this.incrementControllerSequenceUseCase.execute({
+      id: match.id,
+      topic: match.brokerTopic,
+    });
   }
 }
 

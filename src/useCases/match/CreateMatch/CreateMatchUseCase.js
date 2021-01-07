@@ -7,6 +7,7 @@ const EnrollmentRepository = require('../../../repositories/enrollmentRepository
 const MatchRepository = require('../../../repositories/matchRepository');
 const PlayerRepository = require('../../../repositories/playerRepository');
 const ScoreboardRepository = require('../../../repositories/scoreboardRepository');
+const ScoreRepository = require('../../../repositories/scoreRepository');
 const { isEmpty } = require('../../../utils/string');
 
 const validateSchema = require('../../../utils/validation');
@@ -23,16 +24,19 @@ class CreateMatchUseCase {
    * @param {EnrollmentRepository} container.enrollmentRepository - EnrollmentRepository
    * @param {MatchRepository} container.matchRepository - MatchRepository
    * @param {PlayerRepository} container.playerRepository - PlayerRepository
+   * @param {ScoreRepository} container.scoreRepository - ScoreRepository
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    */
   constructor({
     getAcademyByIdUseCase, scoreboardRepository, enrollmentRepository, matchRepository, playerRepository,
+    scoreRepository,
   }) {
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.scoreboardRepository = scoreboardRepository;
     this.enrollmentRepository = enrollmentRepository;
     this.matchRepository = matchRepository;
     this.playerRepository = playerRepository;
+    this.scoreRepository = scoreRepository;
   }
 
   validate(request) {
@@ -123,17 +127,19 @@ class CreateMatchUseCase {
       hasAdvantage: request.hasAdvantage,
     };
 
-    const { id } = await this.matchRepository.create(match);
+    const [id] = await this.matchRepository.create(match);
 
     const tokenExpiration = addMinutes(new Date(), request.duration);
 
     this.publishInitialData(match.brokerTopic);
+    this.createInitialScore(id);
 
     return {
       id,
       publishToken,
       refreshToken,
       expiration: tokenExpiration,
+      controllerSequence: 0,
     };
   }
 
@@ -149,7 +155,8 @@ class CreateMatchUseCase {
       'Score_B',
       'Current_Set',
       'SetsWon_A',
-      'SetsWon_B'];
+      'SetsWon_B',
+      'Controller_Sequence'];
 
     topics.forEach((topic) => broker.publish({
       topic: `${brokerTopic}/${topic}`,
@@ -163,6 +170,39 @@ class CreateMatchUseCase {
       payload: Buffer.from('A'),
       qos: 1,
       retain: true,
+    });
+  }
+
+  async createInitialScore(matchId) {
+    this.scoreRepository.createMatchLog({
+      matchId,
+      scoreSequence: 0,
+      controllerSequence: 0,
+    });
+
+    this.scoreRepository.createScoreLog({
+      matchId,
+      sequence: 0,
+      playerId: null,
+      Set1A: 0,
+      Set1B: 0,
+      Set2A: 0,
+      Set2B: 0,
+      Set3A: 0,
+      Set3B: 0,
+      ScoreA: 0,
+      ScoreB: 0,
+      CurrentSet: 0,
+      SetsWonA: 0,
+      SetsWonB: 0,
+      PlayerServing: 0,
+    });
+
+    this.scoreRepository.createMessageLog({
+      matchId,
+      playerId: null,
+      message: 'Partida iniciada!',
+      type: 'system',
     });
   }
 }
