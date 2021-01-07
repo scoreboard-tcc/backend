@@ -21,6 +21,7 @@ class ScoreboardRepository {
 
   async findBySerialNumberAndActive(serialNumber) {
     return createQuery(tableName)
+      .select('id')
       .where('serialNumber', 'like', serialNumber)
       .andWhere('active', '=', true)
       .first();
@@ -97,6 +98,15 @@ class ScoreboardRepository {
         player2Name: result.player2Name,
       } : null,
     }));
+  }
+
+  async findBySerialNumberAndStaticTokenAndActive(serialNumber, staticToken) {
+    return createQuery(tableName)
+      .select('id')
+      .where('serialNumber', '=', serialNumber)
+      .andWhere('staticToken', '=', staticToken)
+      .andWhere('active', '=', true)
+      .first();
   }
 }
 

@@ -84,6 +84,30 @@ class MatchRepository {
 
     return data;
   }
+
+  async findMatchByBrokerTopicAndPublishTokenAndIngame(brokerTopic, publishToken) {
+    return createQuery(tableName)
+      .select('id')
+      .where('brokerTopic', '=', brokerTopic)
+      .andWhere('publishToken', '=', publishToken)
+      .andWhere('status', '=', 'INGAME')
+      .first();
+  }
+
+  async findByScoreboardIdAndIngame(scoreboardId) {
+    return createQuery(tableName)
+      .select('duration', 'brokerTopic')
+      .where('scoreboardId', '=', scoreboardId)
+      .andWhere('status', '=', 'INGAME')
+      .first();
+  }
+
+  async findByBrokerTopicAndIngame(brokerTopic) {
+    return createQuery(tableName)
+      .where('brokerTopic', '=', brokerTopic)
+      .andWhere('status', '=', 'INGAME')
+      .first();
+  }
 }
 
 module.exports = MatchRepository;
