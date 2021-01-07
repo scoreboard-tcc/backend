@@ -108,6 +108,15 @@ class MatchRepository {
       .andWhere('status', '=', 'INGAME')
       .first();
   }
+
+  async findByMatchIdAndPinAndIngame(matchId, pin) {
+    return createQuery(tableName)
+      .select('id', 'brokerTopic', 'startedAt', 'duration')
+      .where('id', '=', matchId)
+      .andWhere('pin', '=', pin)
+      .andWhere('status', '=', 'INGAME')
+      .first();
+  }
 }
 
 module.exports = MatchRepository;

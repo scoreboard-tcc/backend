@@ -20,4 +20,8 @@ router.get('/getMatchById/:matchId', wrap(async (request, response) => {
   await container.cradle.getMatchByIdController.handle(request, response);
 }));
 
+router.post('/checkPin', wrap(async (request, response) => {
+  await container.cradle.checkPinController.handle(request, response);
+}));
+
 module.exports = router;
