@@ -1,22 +1,18 @@
-const aedes = require('aedes');
-const aedesPersistenceMongoDB = require('aedes-persistence-mongodb');
 const ws = require('websocket-stream');
 const brokerConfig = require('../../config/broker');
-const buildAuthorizePublish = require('./authorizePublish');
+const authorizePublish = require('./authorizePublish');
 const authorizeSubscribe = require('./authorizeSubscribe');
+const broker = require('./broker');
+const onPublish = require('./onPublish');
+const onSucscribe = require('./onSubscribe');
 const http = require('http');
 const net = require('net');
 
-const broker = aedes({
-  persistence: aedesPersistenceMongoDB(
-    {
-      url: brokerConfig.persistenceUrl,
-    },
-  ),
-});
-
 broker.authorizeSubscribe = authorizeSubscribe;
-broker.authorizePublish = buildAuthorizePublish(broker);
+broker.authorizePublish = authorizePublish;
+
+broker.on('subscribe', onSucscribe);
+broker.on('publish', onPublish);
 
 const httpServer = http.createServer();
 
