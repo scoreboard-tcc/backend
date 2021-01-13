@@ -2,7 +2,6 @@ const { addMinutes } = require('date-fns');
 const { v4: uuid } = require('uuid');
 const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
-const { broker } = require('../../../providers/mqtt');
 const EnrollmentRepository = require('../../../repositories/enrollmentRepository');
 const MatchRepository = require('../../../repositories/matchRepository');
 const PlayerRepository = require('../../../repositories/playerRepository');
@@ -25,11 +24,12 @@ class CreateMatchUseCase {
    * @param {MatchRepository} container.matchRepository - MatchRepository
    * @param {PlayerRepository} container.playerRepository - PlayerRepository
    * @param {ScoreRepository} container.scoreRepository - ScoreRepository
+   * @param container.broker
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    */
   constructor({
     getAcademyByIdUseCase, scoreboardRepository, enrollmentRepository, matchRepository, playerRepository,
-    scoreRepository,
+    scoreRepository, broker,
   }) {
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.scoreboardRepository = scoreboardRepository;
@@ -37,6 +37,7 @@ class CreateMatchUseCase {
     this.matchRepository = matchRepository;
     this.playerRepository = playerRepository;
     this.scoreRepository = scoreRepository;
+    this.broker = broker;
   }
 
   validate(request) {
@@ -158,14 +159,14 @@ class CreateMatchUseCase {
       'SetsWon_B',
       'Controller_Sequence'];
 
-    topics.forEach((topic) => broker.publish({
+    topics.forEach((topic) => this.broker.publish({
       topic: `${brokerTopic}/${topic}`,
       payload: Buffer.from('0'),
       qos: 1,
       retain: true,
     }));
 
-    broker.publish({
+    this.broker.publish({
       topic: `${brokerTopic}/Player_Serving`,
       payload: Buffer.from('A'),
       qos: 1,

@@ -9,9 +9,9 @@ const asyncLocalStorage = require('../utils/asyncLocalStorage');
 async function transactionMiddleware(req, res, next) {
   const transaction = await knexInstance.transaction();
 
-  asyncLocalStorage.run(transaction, () => {
-    next();
-  });
+  // asyncLocalStorage.run(transaction, () => {
+  //   next();
+  // });
 }
 
 /**
@@ -22,9 +22,9 @@ async function transactionMiddleware(req, res, next) {
 async function postRequestMiddleware(req, res, next) {
   console.log('after');
 
-  const transaction = asyncLocalStorage.getStore();
+  // const transaction = asyncLocalStorage.getStore();
 
-  if (transaction) await transaction.commit();
+  // if (transaction) await transaction.commit();
 }
 
 module.exports = { transactionMiddleware, postRequestMiddleware };

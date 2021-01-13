@@ -1,4 +1,3 @@
-const { broker } = require('../../../providers/mqtt');
 const ScoreRepository = require('../../../repositories/scoreRepository');
 const validateSchema = require('../../../utils/validation');
 const IncrementControllerSequenceValidator = require('./IncrementControllerSequenceValidator');
@@ -9,10 +8,12 @@ class IncrementControllerSequenceUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param container.broker
    * @param {ScoreRepository} container.scoreRepository - ScoreRepository
    */
-  constructor({ scoreRepository }) {
+  constructor({ scoreRepository, broker }) {
     this.scoreRepository = scoreRepository;
+    this.broker = broker;
   }
 
   validate(request) {
@@ -30,7 +31,7 @@ class IncrementControllerSequenceUseCase {
   }
 
   async publishControllerSequence(topic, sequence) {
-    broker.publish({
+    this.broker.publish({
       topic: `${topic}/Controller_Sequence`,
       payload: Buffer.from(sequence.toString()),
       qos: 1,

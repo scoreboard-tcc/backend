@@ -22,17 +22,10 @@ ws.createServer({
 
 const server = net.createServer(broker.handle);
 
-/**
- *
- */
-async function listen() {
-  httpServer.listen(brokerConfig.wsPort, () => {
-    console.log('Aedes server (WebSocket) running');
-  });
+httpServer.listen(brokerConfig.wsPort, () => {
+  console.log('Aedes server (WebSocket) running');
+});
 
-  server.listen(brokerConfig.standalonePort, () => {
-    console.log('Aedes server (Standalone) running');
-  });
-}
-
-module.exports = { broker, listen };
+server.listen(brokerConfig.standalonePort, () => {
+  console.log('Aedes server (Standalone) running');
+});

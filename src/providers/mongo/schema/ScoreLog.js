@@ -6,6 +6,7 @@ const schema = new Schema({
   matchId: Number,
   sequence: Number,
   playerId: Number,
+  scoreType: String, // TODO: usar enum?
   Set1A: Number,
   Set1B: Number,
   Set2A: Number,

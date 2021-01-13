@@ -1,12 +1,30 @@
 /* eslint-disable camelcase */
+const container = require('../../container');
 const keyv = require('../keyv');
-const broker = require('./broker');
+
+const broker = container.resolve('broker');
+const addScoreUseCase = container.resolve('addScoreUseCase');
+
+/**
+ * @param topic
+ * @param fieldMap
+ */
+async function publishScoreTopics(topic, fieldMap) {
+  Object.entries(fieldMap)
+    .filter(([t]) => !['Who_Scored', 'Who_Scored_Name', 'Score_Type'].includes(t))
+    .forEach(([field, value]) => broker.publish({
+      topic: `${topic}/${field}`,
+      payload: Buffer.from(value),
+      qos: 1,
+      retain: true,
+    }));
+}
 
 /**
  * @param topic
  * @param packet
  */
-async function publishScoreTopics(topic, packet) {
+async function processScorePacket(topic, packet) {
   try {
     const data = packet.payload.toString();
 
@@ -23,6 +41,9 @@ async function publishScoreTopics(topic, packet) {
       SetsWon_A,
       SetsWon_B,
       Player_Serving,
+      Who_Scored,
+      Who_Scored_Name,
+      Score_Type,
     ] = data.split(';');
 
     const fieldMap = {
@@ -38,15 +59,13 @@ async function publishScoreTopics(topic, packet) {
       SetsWon_A,
       SetsWon_B,
       Player_Serving,
+      Who_Scored,
+      Who_Scored_Name,
+      Score_Type,
     };
 
-    Object.entries(fieldMap)
-      .forEach(([field, value]) => broker.publish({
-        topic: `${topic}/${field}`,
-        payload: Buffer.from(value),
-        qos: 1,
-        retain: true,
-      }));
+    publishScoreTopics(topic, fieldMap);
+    addScoreUseCase.execute(topic, fieldMap);
   } catch (error) {
     console.log(error);
   }
@@ -63,9 +82,8 @@ function shouldIgnorePacket(packet) {
 
 /**
  * @param packet
- * @param client
  */
-async function onPublish(packet, client) {
+async function onPublish(packet) {
   if (shouldIgnorePacket(packet)) {
     return;
   }
@@ -89,7 +107,7 @@ async function onPublish(packet, client) {
   }
 
   if (field === 'Score') {
-    publishScoreTopics(topic, packet);
+    processScorePacket(topic, packet);
   }
 }
 

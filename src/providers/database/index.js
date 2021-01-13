@@ -11,13 +11,13 @@ const knex = Knex(knexConfig);
  * @param tableName
  */
 function createQuery(tableName) {
-  const transaction = asyncLocalStorage.getStore();
+  // const transaction = asyncLocalStorage.getStore();
 
-  if (transaction) {
-    return knex
-      .table(tableName)
-      .transacting(transaction);
-  }
+  // if (transaction) {
+  //   return knex
+  //     .table(tableName)
+  //     .transacting(transaction);
+  // }
 
   return knex
     .table(tableName);

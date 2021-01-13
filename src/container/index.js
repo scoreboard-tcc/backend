@@ -3,6 +3,7 @@
 /* eslint-disable global-require */
 const awilix = require('awilix');
 const glob = require('glob');
+const broker = require('../providers/mqtt/broker');
 const path = require('path');
 
 const container = awilix.createContainer();
@@ -31,5 +32,9 @@ function processGlob(string) {
 
 processGlob('src/repositories/*Repository.js');
 processGlob('src/useCases/**/*{Controller,UseCase}.js');
+
+container.register({
+  broker: awilix.asValue(broker, { lifetime: awilix.Lifetime.SINGLETON }),
+});
 
 module.exports = container;
