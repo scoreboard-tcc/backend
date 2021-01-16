@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 
 const schema = new Schema({
   matchId: Number,
-  playerId: Number,
   message: String,
   type: String,
 }, {

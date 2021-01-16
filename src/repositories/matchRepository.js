@@ -66,7 +66,7 @@ class MatchRepository {
     const pin = '"Match"."pin" is not null as pin';
 
     const data = await createQuery(tableName)
-      .select('id', 'player1Name', 'player2Name', 'brokerTopic', 'startedAt', createQuery.knexInstance.raw(pin))
+      .select('id', 'player1Name', 'player2Name', 'player1Id', 'player2Id', 'brokerTopic', 'startedAt', createQuery.knexInstance.raw(pin))
       .where('id', '=', matchId)
       .andWhere('status', '=', 'INGAME')
       .first();
@@ -94,6 +94,14 @@ class MatchRepository {
       .first();
   }
 
+  async findMatchByPublishTokenAndIngame(publishToken) {
+    return createQuery(tableName)
+      .select('id', 'brokerTopic')
+      .andWhere('publishToken', '=', publishToken)
+      .andWhere('status', '=', 'INGAME')
+      .first();
+  }
+
   async findByScoreboardIdAndIngame(scoreboardId) {
     return createQuery(tableName)
       .select('duration', 'brokerTopic')
@@ -115,6 +123,16 @@ class MatchRepository {
       .where('id', '=', matchId)
       .andWhere('pin', '=', pin)
       .andWhere('status', '=', 'INGAME')
+      .first();
+  }
+
+  async findMatchBySerialNumberOrBrokerTopic(topic) {
+    return createQuery(tableName)
+      .select('*', 'Match.id as id')
+      .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
+      .andWhere('Match.status', '=', 'INGAME')
+      .andWhere((q) => q.where('Scoreboard.serialNumber', '=', topic)
+        .orWhere('Match.brokerTopic', '=', topic))
       .first();
   }
 }

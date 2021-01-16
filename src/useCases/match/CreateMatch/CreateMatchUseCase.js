@@ -133,7 +133,10 @@ class CreateMatchUseCase {
     const tokenExpiration = addMinutes(new Date(), request.duration);
 
     this.publishInitialData(match.brokerTopic);
-    this.createInitialScore(id);
+
+    const createdMatch = await this.matchRepository.findByMatchIdAndIngame(id);
+
+    this.createInitialScore(createdMatch);
 
     return {
       id,
@@ -174,34 +177,40 @@ class CreateMatchUseCase {
     });
   }
 
-  async createInitialScore(matchId) {
+  async createInitialScore(match) {
     this.scoreRepository.createMatchLog({
-      matchId,
+      matchId: match.id,
       scoreSequence: 0,
       controllerSequence: 0,
+      remainingUndos: 0,
+      remainingRedos: 0,
+      player1Id: match.player1Id,
+      player2Id: match.player2Id,
+      player1Name: match.player1Name,
+      player2Name: match.player2Name,
     });
 
     this.scoreRepository.createScoreLog({
-      matchId,
+      matchId: match.id,
       sequence: 0,
       playerId: null,
-      Set1A: 0,
-      Set1B: 0,
-      Set2A: 0,
-      Set2B: 0,
-      Set3A: 0,
-      Set3B: 0,
-      ScoreA: 0,
-      ScoreB: 0,
-      CurrentSet: 0,
-      SetsWonA: 0,
-      SetsWonB: 0,
-      PlayerServing: 0,
+      playerName: null,
+      set1A: 0,
+      set1B: 0,
+      set2A: 0,
+      set2B: 0,
+      set3A: 0,
+      set3B: 0,
+      scoreA: 0,
+      scoreB: 0,
+      currentSet: 0,
+      setsWonA: 0,
+      setsWonB: 0,
+      playerServing: null,
     });
 
     this.scoreRepository.createMessageLog({
-      matchId,
-      playerId: null,
+      matchId: match.id,
       message: 'Partida iniciada!',
       type: 'system',
     });

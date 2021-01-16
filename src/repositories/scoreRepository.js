@@ -2,15 +2,15 @@ const { MatchLog, MessageLog, ScoreLog } = require('../providers/mongo/schema');
 
 class ScoreRepository {
   async createMatchLog(data) {
-    return MatchLog.create(data);
+    return await MatchLog.create(data);
   }
 
   async createScoreLog(data) {
-    return ScoreLog.create(data);
+    return await ScoreLog.create(data);
   }
 
   async createMessageLog(data) {
-    return MessageLog.create(data);
+    return await MessageLog.create(data);
   }
 
   async incrementAndGetControllerSequence(matchId) {
@@ -26,6 +26,33 @@ class ScoreRepository {
     });
 
     return controllerSequence;
+  }
+
+  async findMatchLogByMatchId(matchId) {
+    return await MatchLog
+      .findOne({ matchId });
+  }
+
+  async findScoreLog(where) {
+    return await ScoreLog
+      .findOne(where);
+  }
+
+  async removeOrphanScores(matchId, scoreSequence) {
+    return await ScoreLog.deleteMany({
+      matchId,
+      sequence: {
+        $gt: scoreSequence,
+      },
+    });
+  }
+
+  async updateMatchLog(where, update) {
+    return await MatchLog.updateOne(where, update);
+  }
+
+  async updateScoreLog(where, update) {
+    return await ScoreLog.updateOne(where, update);
   }
 }
 

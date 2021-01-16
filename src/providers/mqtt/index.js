@@ -4,14 +4,12 @@ const authorizePublish = require('./authorizePublish');
 const authorizeSubscribe = require('./authorizeSubscribe');
 const broker = require('./broker');
 const onPublish = require('./onPublish');
-const onSucscribe = require('./onSubscribe');
 const http = require('http');
 const net = require('net');
 
 broker.authorizeSubscribe = authorizeSubscribe;
 broker.authorizePublish = authorizePublish;
 
-broker.on('subscribe', onSucscribe);
 broker.on('publish', onPublish);
 
 const httpServer = http.createServer();

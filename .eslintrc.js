@@ -21,6 +21,7 @@ module.exports = {
   rules: {
     'class-methods-use-this': 'off',
     'max-len': 'off',
+    'no-return-await': 'off',
     'import/order': ['error', {
       groups: ['external', 'internal', 'object'],
       alphabetize: { order: 'asc', caseInsensitive: true },

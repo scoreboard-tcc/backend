@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 const container = require('../../container');
-const keyv = require('../keyv');
 
 const broker = container.resolve('broker');
 const addScoreUseCase = container.resolve('addScoreUseCase');
+const matchRepository = container.resolve('matchRepository');
 
 /**
  * @param topic
@@ -11,7 +11,7 @@ const addScoreUseCase = container.resolve('addScoreUseCase');
  */
 async function publishScoreTopics(topic, fieldMap) {
   Object.entries(fieldMap)
-    .filter(([t]) => !['Who_Scored', 'Who_Scored_Name', 'Score_Type'].includes(t))
+    .filter(([t]) => !['Player_Scored', 'Score_Type', 'Score'].includes(t))
     .forEach(([field, value]) => broker.publish({
       topic: `${topic}/${field}`,
       payload: Buffer.from(value),
@@ -21,10 +21,11 @@ async function publishScoreTopics(topic, fieldMap) {
 }
 
 /**
+ * @param match
  * @param topic
  * @param packet
  */
-async function processScorePacket(topic, packet) {
+async function processScorePacket(match, topic, packet) {
   try {
     const data = packet.payload.toString();
 
@@ -41,8 +42,7 @@ async function processScorePacket(topic, packet) {
       SetsWon_A,
       SetsWon_B,
       Player_Serving,
-      Who_Scored,
-      Who_Scored_Name,
+      Player_Scored,
       Score_Type,
     ] = data.split(';');
 
@@ -59,13 +59,12 @@ async function processScorePacket(topic, packet) {
       SetsWon_A,
       SetsWon_B,
       Player_Serving,
-      Who_Scored,
-      Who_Scored_Name,
+      Player_Scored,
       Score_Type,
     };
 
     publishScoreTopics(topic, fieldMap);
-    addScoreUseCase.execute(topic, fieldMap);
+    addScoreUseCase.execute(match, fieldMap);
   } catch (error) {
     console.log(error);
   }
@@ -81,33 +80,50 @@ function shouldIgnorePacket(packet) {
 }
 
 /**
+ * @param scoreboardAndMatchTopics
+ * @param topic
+ * @param field
+ * @param packet
+ */
+async function forwardPacket(scoreboardAndMatchTopics, topic, field, packet) {
+  const topicToForward = scoreboardAndMatchTopics.brokerTopic === topic
+    ? scoreboardAndMatchTopics.serialNumber : scoreboardAndMatchTopics.brokerTopic;
+
+  broker.publish({
+    topic: `${topicToForward}/${field}`,
+    payload: packet.payload,
+    qos: 1,
+    retain: true,
+    properties: {
+      userProperties: {
+        ignorePacket: true,
+      },
+    },
+  });
+}
+
+/**
  * @param packet
  */
 async function onPublish(packet) {
-  if (shouldIgnorePacket(packet)) {
+  const [topic, field] = packet.topic.split('/');
+
+  if (topic === '$SYS' || shouldIgnorePacket(packet)) {
     return;
   }
 
-  const [topic, field] = packet.topic.split('/');
+  const match = await matchRepository.findMatchBySerialNumberOrBrokerTopic(topic);
 
-  const forwardToTopic = await keyv.get(topic);
+  if (!match) {
+    return;
+  }
 
-  if (forwardToTopic) {
-    broker.publish({
-      topic: `${forwardToTopic}/${field}`,
-      payload: packet.payload,
-      qos: 1,
-      retain: true,
-      properties: {
-        userProperties: {
-          ignorePacket: true,
-        },
-      },
-    });
+  if (match.scoreboardId) {
+    forwardPacket(match, topic, field, packet);
   }
 
   if (field === 'Score') {
-    processScorePacket(topic, packet);
+    processScorePacket(match, topic, packet);
   }
 }
 
