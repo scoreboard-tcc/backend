@@ -1,4 +1,5 @@
 const createQuery = require('../providers/database');
+const { create } = require('../providers/mongo/schema/MatchLog');
 
 const tableName = 'Match';
 
@@ -65,24 +66,39 @@ class MatchRepository {
   async findByMatchIdAndIngame(matchId) {
     const pin = '"Match"."pin" is not null as pin';
 
-    const data = await createQuery(tableName)
-      .select('id', 'player1Name', 'player2Name', 'player1Id', 'player2Id', 'brokerTopic', 'startedAt', createQuery.knexInstance.raw(pin))
-      .where('id', '=', matchId)
+    const match = await createQuery(tableName)
+      .select('Match.id as id', 'player1Name', 'player2Name', 'player1Id', 'player2Id', 'brokerTopic', 'startedAt',
+        'duration',
+        'scoreboardId',
+        'serialNumber',
+        createQuery.knexInstance.raw(pin))
+      .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
+      .where('Match.id', '=', matchId)
       .andWhere('status', '=', 'INGAME')
       .first();
 
-    if (!data) {
+    if (!match) {
       return null;
     }
 
-    if (data.pin) {
-      return {
-        ...data,
-        brokerTopic: null,
-      };
+    if (match.pin) {
+      delete match.brokerTopic;
     }
 
-    return data;
+    return ({
+      id: match.id,
+      brokerTopic: match.brokerTopic,
+      startedAt: match.startedAt,
+      duration: match.duration,
+      player1Id: match.player1Id,
+      player2Id: match.player2Id,
+      player1Name: match.player1Name,
+      player2Name: match.player2Name,
+      scoreboard: match.scoreboardId ? {
+        id: match.scoreboardId,
+        serialNumber: match.serialNumber,
+      } : null,
+    });
   }
 
   async findMatchByBrokerTopicAndPublishTokenAndIngame(brokerTopic, publishToken) {
@@ -134,6 +150,30 @@ class MatchRepository {
       .andWhere((q) => q.where('Scoreboard.serialNumber', '=', topic)
         .orWhere('Match.brokerTopic', '=', topic))
       .first();
+  }
+
+  async updateMatchById(id, data) {
+    return createQuery(tableName)
+      .update(data)
+      .where('id', '=', id);
+  }
+
+  async findByIngame() {
+    const data = await createQuery(tableName)
+      .select('*', 'Match.id as id')
+      .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
+      .andWhere('status', '=', 'INGAME');
+
+    return data.map((match) => ({
+      id: match.id,
+      brokerTopic: match.brokerTopic,
+      startedAt: match.startedAt,
+      duration: match.duration,
+      scoreboard: match.scoreboardId ? {
+        id: match.scoreboardId,
+        serialNumber: match.serialNumber,
+      } : null,
+    }));
   }
 }
 

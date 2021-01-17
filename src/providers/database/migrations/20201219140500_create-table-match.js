@@ -88,8 +88,6 @@ exports.up = (knex) => knex.schema
 
     table.boolean('hasAdvantage')
       .notNullable();
-
-    // TODO: estado da partida (pontuação)
   });
 
 /**

@@ -11,6 +11,7 @@ const { isEmpty } = require('../../../utils/string');
 
 const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
+const ScheduleFinishUseCase = require('../ScheduleFinish/ScheduleFinishUseCase');
 const CreateMatchValidator = require('./CreateMatchValidator');
 
 class CreateMatchUseCase {
@@ -25,11 +26,12 @@ class CreateMatchUseCase {
    * @param {PlayerRepository} container.playerRepository - PlayerRepository
    * @param {ScoreRepository} container.scoreRepository - ScoreRepository
    * @param container.broker
+   * @param {ScheduleFinishUseCase} container.scheduleFinishUseCase - ScheduleFinishUseCase
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    */
   constructor({
     getAcademyByIdUseCase, scoreboardRepository, enrollmentRepository, matchRepository, playerRepository,
-    scoreRepository, broker,
+    scoreRepository, broker, scheduleFinishUseCase,
   }) {
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.scoreboardRepository = scoreboardRepository;
@@ -38,6 +40,7 @@ class CreateMatchUseCase {
     this.playerRepository = playerRepository;
     this.scoreRepository = scoreRepository;
     this.broker = broker;
+    this.scheduleFinishUseCase = scheduleFinishUseCase;
   }
 
   validate(request) {
@@ -137,6 +140,7 @@ class CreateMatchUseCase {
     const createdMatch = await this.matchRepository.findByMatchIdAndIngame(id);
 
     this.createInitialScore(createdMatch);
+    this.scheduleFinishUseCase.execute(createdMatch);
 
     return {
       id,
