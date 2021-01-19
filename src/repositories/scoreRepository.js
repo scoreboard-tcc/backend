@@ -54,6 +54,16 @@ class ScoreRepository {
   async updateScoreLog(where, update) {
     return await ScoreLog.updateOne(where, update);
   }
+
+  async getLogsByMatchId(matchId, { page, limit }) {
+    return MessageLog.paginate({ matchId }, {
+      page,
+      limit,
+      sort: {
+        createdAt: -1,
+      },
+    });
+  }
 }
 
 module.exports = ScoreRepository;

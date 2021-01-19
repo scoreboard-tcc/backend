@@ -1,4 +1,4 @@
-const { addMinutes, addSeconds } = require('date-fns');
+const { addMinutes } = require('date-fns');
 const schedule = require('node-schedule');
 const MatchRepository = require('../../../repositories/matchRepository');
 

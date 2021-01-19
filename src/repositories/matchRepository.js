@@ -110,6 +110,14 @@ class MatchRepository {
       .first();
   }
 
+  async findMatchByBrokerTopicAndIngame(brokerTopic) {
+    return createQuery(tableName)
+      .select('id')
+      .where('brokerTopic', '=', brokerTopic)
+      .andWhere('status', '=', 'INGAME')
+      .first();
+  }
+
   async findMatchByPublishTokenAndIngame(publishToken) {
     return createQuery(tableName)
       .select('id', 'brokerTopic')
