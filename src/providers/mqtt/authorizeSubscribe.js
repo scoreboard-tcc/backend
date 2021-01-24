@@ -5,7 +5,7 @@
  */
 async function authorizeSubscribe(client, subscription, callback) {
   try {
-    const isTopicValid = subscription.topic.match(/^([a-zA-Z0-9\-:]+)\/([a-zA-Z0-9#_]+)$/);
+    const isTopicValid = subscription.topic.match(/^([a-zA-Z0-9\-:]+)\/([a-zA-Z0-9#_+]+)$/);
 
     if (!isTopicValid) {
       return callback(new Error('Tópico inválido'));

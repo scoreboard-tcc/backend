@@ -56,6 +56,8 @@ class RedoScoreUseCase {
       SetsWon_A: scoreLog.setsWonA,
       SetsWon_B: scoreLog.setsWonB,
       Player_Serving: scoreLog.playerServing,
+      Match_Winner: scoreLog.matchWinner,
+      Current_State: scoreLog.currentState,
     };
 
     Object.entries(topicMap)

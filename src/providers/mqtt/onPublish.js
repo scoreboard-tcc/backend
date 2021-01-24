@@ -4,6 +4,7 @@ const container = require('../../container');
 const broker = container.resolve('broker');
 const addScoreUseCase = container.resolve('addScoreUseCase');
 const matchRepository = container.resolve('matchRepository');
+const finishMatchUseCase = container.resolve('finishMatchUseCase');
 
 /**
  * @param topic
@@ -42,6 +43,8 @@ async function processScorePacket(match, topic, packet) {
       SetsWon_A,
       SetsWon_B,
       Player_Serving,
+      Match_Winner,
+      Current_State,
       Player_Scored,
       Score_Type,
     ] = data.split(';');
@@ -59,12 +62,18 @@ async function processScorePacket(match, topic, packet) {
       SetsWon_A,
       SetsWon_B,
       Player_Serving,
+      Match_Winner,
+      Current_State,
       Player_Scored,
       Score_Type,
     };
 
     publishScoreTopics(topic, fieldMap);
     addScoreUseCase.execute(match, fieldMap);
+
+    if (Match_Winner !== 'null') {
+      finishMatchUseCase.execute(match);
+    }
   } catch (error) {
     console.log(error);
   }

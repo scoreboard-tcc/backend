@@ -40,6 +40,8 @@ class AddScoreUseCase {
       setsWonA: fieldMap.SetsWon_A,
       setsWonB: fieldMap.SetsWon_B,
       playerServing: fieldMap.Player_Serving,
+      // matchWinner: fieldMap.Match_Winner,
+      currentState: fieldMap.Match_State,
       ...this.getPlayerData(matchLog, fieldMap),
     });
 
@@ -59,21 +61,21 @@ class AddScoreUseCase {
   getPlayerData(matchLog, fieldMap) {
     const playerScored = fieldMap.Player_Scored;
 
-    if (playerScored === 'A') {
+    if (playerScored === '0') {
       return {
         playerId: matchLog.player1Id,
         playerName: matchLog.player1Name,
       };
     }
 
-    if (playerScored === 'B') {
+    if (playerScored === '1') {
       return {
         playerId: matchLog.player2Id,
         playerName: matchLog.player2Name,
       };
     }
 
-    throw new BusinessException('Player_Scored deve ser "A" ou "B"');
+    throw new BusinessException('Player_Scored deve ser "0" ou "1"');
   }
 
   async addMessage(match, fieldMap) {
@@ -89,7 +91,7 @@ class AddScoreUseCase {
       topic: `${match.brokerTopic}/Message`,
       payload: Buffer.from(message),
       qos: 1,
-      retain: true,
+      retain: false,
     });
   }
 }

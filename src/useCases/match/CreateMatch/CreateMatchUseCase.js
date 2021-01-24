@@ -146,7 +146,7 @@ class CreateMatchUseCase {
       id,
       publishToken,
       refreshToken,
-      expiration: tokenExpiration,
+      expirationDate: tokenExpiration,
       controllerSequence: 0,
     };
   }
@@ -164,7 +164,8 @@ class CreateMatchUseCase {
       'Current_Set',
       'SetsWon_A',
       'SetsWon_B',
-      'Controller_Sequence'];
+      'Controller_Sequence',
+      'Player_Serving'];
 
     topics.forEach((topic) => this.broker.publish({
       topic: `${brokerTopic}/${topic}`,
@@ -174,9 +175,14 @@ class CreateMatchUseCase {
     }));
 
     this.broker.publish({
-      topic: `${brokerTopic}/Player_Serving`,
-      payload: Buffer.from('A'),
-      qos: 1,
+      topic: `${brokerTopic}/Match_Winner`,
+      payload: Buffer.from('null'),
+      retain: true,
+    });
+
+    this.broker.publish({
+      topic: `${brokerTopic}/Current_State`,
+      payload: Buffer.from('GAME'),
       retain: true,
     });
   }

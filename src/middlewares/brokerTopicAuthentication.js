@@ -10,7 +10,7 @@ const matchRepository = container.resolve('matchRepository');
  */
 async function brokerTopicAuthenticationMiddlware(request, response, next) {
   try {
-    const { authorization: token } = request.headers;
+    const { 'x-broker-topic': token } = request.headers;
 
     if (!token) {
       throw new BusinessException('Acesso negado');

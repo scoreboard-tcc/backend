@@ -14,12 +14,14 @@ const schema = new Schema({
   set2B: Number,
   set3A: Number,
   set3B: Number,
-  scoreA: Number,
-  scoreB: Number,
+  scoreA: String,
+  scoreB: String,
   currentSet: Number,
   setsWonA: Number,
   setsWonB: Number,
   playerServing: String,
+  matchWinner: Number,
+  currentState: String,
 }, {
   timestamps: true,
 });

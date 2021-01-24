@@ -70,7 +70,10 @@ class MatchRepository {
       .select('Match.id as id', 'player1Name', 'player2Name', 'player1Id', 'player2Id', 'brokerTopic', 'startedAt',
         'duration',
         'scoreboardId',
-        'serialNumber',
+        'description',
+        'tieBreakType',
+        'scoringType',
+        'hasAdvantage',
         createQuery.knexInstance.raw(pin))
       .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
       .where('Match.id', '=', matchId)
@@ -87,6 +90,7 @@ class MatchRepository {
 
     return ({
       id: match.id,
+      description: match.description || `Partida ${match.id}`,
       brokerTopic: match.brokerTopic,
       startedAt: match.startedAt,
       duration: match.duration,
@@ -94,9 +98,11 @@ class MatchRepository {
       player2Id: match.player2Id,
       player1Name: match.player1Name,
       player2Name: match.player2Name,
+      tieBreakType: match.tieBreakType,
+      scoringType: match.scoringType,
+      hasAdvantage: match.hasAdvantage,
       scoreboard: match.scoreboardId ? {
         id: match.scoreboardId,
-        serialNumber: match.serialNumber,
       } : null,
     });
   }
