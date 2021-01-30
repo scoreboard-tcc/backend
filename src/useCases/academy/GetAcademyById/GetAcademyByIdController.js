@@ -1,8 +1,8 @@
 const GetAcademyByIdUseCase = require('./GetAcademyByIdUseCase');
 
-class CheckIfSubdomainIsAvailableController {
+class GetAcademyByIdController {
   /**
-   * CheckIfSubdomainIsAvailableController
+   * GetAcademyByIdController
    *
    * @class
    * @param {object} container - Container
@@ -21,4 +21,4 @@ class CheckIfSubdomainIsAvailableController {
   }
 }
 
-module.exports = CheckIfSubdomainIsAvailableController;
+module.exports = GetAcademyByIdController;

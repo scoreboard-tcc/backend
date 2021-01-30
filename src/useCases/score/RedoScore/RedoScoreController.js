@@ -15,9 +15,9 @@ class RedoScoreController {
   async handle(request, response) {
     const { match } = response.locals;
 
-    const canRedo = await this.redoScoreUseCase.execute(match);
+    const result = await this.redoScoreUseCase.execute(match);
 
-    return response.status(200).json({ canRedo });
+    return response.status(200).json(result);
   }
 }
 

@@ -20,7 +20,8 @@ class AddScoreUseCase {
   }
 
   async execute(match, fieldMap) {
-    const matchLog = await this.scoreRepository.findMatchLogByMatchId(match.id);
+    let matchLog = await this.scoreRepository.findMatchLogByMatchId(match.id);
+    const playerData = this.getPlayerData(matchLog, fieldMap);
 
     await this.scoreRepository.removeOrphanScores(match.id, matchLog.scoreSequence);
 
@@ -40,12 +41,12 @@ class AddScoreUseCase {
       setsWonA: fieldMap.SetsWon_A,
       setsWonB: fieldMap.SetsWon_B,
       playerServing: fieldMap.Player_Serving,
-      // matchWinner: fieldMap.Match_Winner,
-      currentState: fieldMap.Match_State,
-      ...this.getPlayerData(matchLog, fieldMap),
+      matchWinner: fieldMap.Match_Winner === 'null' ? null : fieldMap.Match_Winner,
+      currentState: fieldMap.Current_State,
+      ...playerData,
     });
 
-    await this.scoreRepository.updateMatchLog({
+    matchLog = await this.scoreRepository.updateMatchLog({
       matchId: match.id,
     }, {
       $inc: {
@@ -55,7 +56,24 @@ class AddScoreUseCase {
       remainingRedos: 0,
     });
 
-    await this.addMessage(match, fieldMap);
+    setTimeout(() => {
+      this.broker.publish({
+        topic: `${match.brokerTopic}/Can_Undo`,
+        payload: Buffer.from(matchLog.remainingUndos > 0 ? 'true' : 'false'),
+        qos: 2,
+        retain: true,
+      });
+
+      this.broker.publish({
+        topic: `${match.brokerTopic}/Can_Redo`,
+        payload: Buffer.from(matchLog.remainingRedos > 0 ? 'true' : 'false'),
+        qos: 2,
+        retain: true,
+      });
+    }, [150]);
+    // Não funciona se tirar o setTimeout...
+
+    await this.addMessage(match, fieldMap, playerData);
   }
 
   getPlayerData(matchLog, fieldMap) {
@@ -78,20 +96,21 @@ class AddScoreUseCase {
     throw new BusinessException('Player_Scored deve ser "0" ou "1"');
   }
 
-  async addMessage(match, fieldMap) {
-    const message = 'TODO fez um ponto!';
+  async addMessage(match, fieldMap, playerData) {
+    const scoreType = fieldMap.Score_Type;
+
+    const message = `${playerData.playerName} - ${scoreType}`;
 
     await this.scoreRepository.createMessageLog({
       matchId: match.id,
       message,
-      type: 'score',
+      type: scoreType,
     });
 
     this.broker.publish({
       topic: `${match.brokerTopic}/Message`,
       payload: Buffer.from(message),
       qos: 1,
-      retain: false,
     });
   }
 }

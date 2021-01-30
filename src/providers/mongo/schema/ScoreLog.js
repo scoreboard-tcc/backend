@@ -19,7 +19,7 @@ const schema = new Schema({
   currentSet: Number,
   setsWonA: Number,
   setsWonB: Number,
-  playerServing: String,
+  playerServing: Number,
   matchWinner: Number,
   currentState: String,
 }, {

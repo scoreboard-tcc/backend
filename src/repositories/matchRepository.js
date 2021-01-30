@@ -1,30 +1,34 @@
 const createQuery = require('../providers/database');
-const { create } = require('../providers/mongo/schema/MatchLog');
 
 const tableName = 'Match';
 
+const pinQuery = createQuery.knexInstance.raw('"Match"."pin" is not null as pin');
+
 class MatchRepository {
+  // Criar partida
+  // Acesso: coordenador
   async create(match) {
     return createQuery(tableName)
       .insert(match)
       .returning('id');
   }
 
+  // Listar as partidas em andamento sem placar de uma academia
+  // Acesso: coordenador
   async findIngameVirtualMatchesByAcademyId(academyId) {
-    const pin = '"Match"."pin" is not null as pin';
-
     return createQuery(tableName)
-      .select('id', 'listed', 'brokerTopic', 'player1Name', 'player2Name', createQuery.knexInstance.raw(pin))
+      .select('id', 'listed', 'brokerTopic', 'player1Name', 'player2Name', pinQuery)
       .where('academyId', '=', academyId)
       .whereNull('scoreboardId')
       .andWhere('status', '=', 'INGAME');
   }
 
+  // Listar as partidas em andamento de uma academia
+  // Não retorna o brokerTopic se a partida tiver pin
+  // Acesso: público
   async findListedInGameMatchesByAcademyId(academyId) {
-    const pin = '"Match"."pin" is not null as pin';
-
     const data = await createQuery(tableName)
-      .select('Match.id', 'Match.brokerTopic', createQuery.knexInstance.raw(pin),
+      .select('Match.id', 'Match.brokerTopic', pinQuery,
         'Scoreboard.id as scoreboardId', 'Scoreboard.description as scoreboardDescription', 'Match.player1Name', 'Match.player2Name')
       .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
       .where('Match.academyId', '=', academyId)
@@ -44,26 +48,35 @@ class MatchRepository {
     }));
   }
 
+  // Procurar partida pelo refreshToken
+  // Acesso: público
   async findByRefreshToken(refreshToken) {
     return createQuery(tableName)
       .where('refreshToken', '=', refreshToken)
       .first();
   }
 
+  // Atualizar tokens na partida
+  // Acesso: público e coordenador
   async updateTokens(id, { publishToken, refreshToken }) {
     return createQuery(tableName)
       .update({ publishToken, refreshToken })
       .where('id', '=', id);
   }
 
-  async findByAcademyIdAndMatchId(academyId, matchId) {
+  // Buscar partida pelo id da academia e da partida
+  // Acesso: coordenador
+  async findByAcademyIdAndMatchIdAndIngame(academyId, matchId) {
     return createQuery(tableName)
       .where('academyId', '=', academyId)
-      .andWhere('matchId', '=', matchId)
+      .andWhere('id', '=', matchId)
+      .andWhere('status', '=', 'INGAME')
       .first();
   }
 
-  async findByMatchIdAndIngame(matchId) {
+  // Buscar partida em andamento pelo id
+  // Acesso: público
+  async findByMatchIdAndIngame(matchId, isCoordinator = false) {
     const pin = '"Match"."pin" is not null as pin';
 
     const match = await createQuery(tableName)
@@ -84,7 +97,7 @@ class MatchRepository {
       return null;
     }
 
-    if (match.pin) {
+    if (!isCoordinator && match.pin) {
       delete match.brokerTopic;
     }
 
@@ -107,6 +120,8 @@ class MatchRepository {
     });
   }
 
+  // Buscar partida em andamento pelo brokerTopic e publishToken
+  // Acesso: público (verificação da permissão para publicar no broker)
   async findMatchByBrokerTopicAndPublishTokenAndIngame(brokerTopic, publishToken) {
     return createQuery(tableName)
       .select('id')
@@ -116,6 +131,8 @@ class MatchRepository {
       .first();
   }
 
+  // Buscar partida pelo brokerTopic
+  // Acesso: usuário que está assistindo a partida (pra saber se pode retornar os logs)
   async findMatchByBrokerTopicAndIngame(brokerTopic) {
     return createQuery(tableName)
       .select('id')
@@ -124,6 +141,8 @@ class MatchRepository {
       .first();
   }
 
+  // Buscar partida pelo publishToken
+  // Acesso: jogador que está controlando a partida
   async findMatchByPublishTokenAndIngame(publishToken) {
     return createQuery(tableName)
       .select('id', 'brokerTopic')
@@ -132,21 +151,8 @@ class MatchRepository {
       .first();
   }
 
-  async findByScoreboardIdAndIngame(scoreboardId) {
-    return createQuery(tableName)
-      .select('duration', 'brokerTopic')
-      .where('scoreboardId', '=', scoreboardId)
-      .andWhere('status', '=', 'INGAME')
-      .first();
-  }
-
-  async findByBrokerTopicAndIngame(brokerTopic) {
-    return createQuery(tableName)
-      .where('brokerTopic', '=', brokerTopic)
-      .andWhere('status', '=', 'INGAME')
-      .first();
-  }
-
+  // Buscar partida em andamento pelo id e pin
+  // Acesso: público
   async findByMatchIdAndPinAndIngame(matchId, pin) {
     return createQuery(tableName)
       .select('id', 'brokerTopic', 'startedAt', 'duration')
@@ -156,6 +162,8 @@ class MatchRepository {
       .first();
   }
 
+  // Buscar partida pelo serialNumber ou pelo brokerTopic
+  // Acesso: broker
   async findMatchBySerialNumberOrBrokerTopic(topic) {
     return createQuery(tableName)
       .select('*', 'Match.id as id')
@@ -166,12 +174,16 @@ class MatchRepository {
       .first();
   }
 
+  // Atualizar partida
+  // Acesso: sistema e coordenador
   async updateMatchById(id, data) {
     return createQuery(tableName)
       .update(data)
       .where('id', '=', id);
   }
 
+  // Buscar partidas em andamento
+  // Acesso: sistema
   async findByIngame() {
     const data = await createQuery(tableName)
       .select('*', 'Match.id as id')

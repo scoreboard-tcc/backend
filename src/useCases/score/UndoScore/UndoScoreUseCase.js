@@ -16,7 +16,7 @@ class UndoScoreUseCase {
   }
 
   async execute(match) {
-    const matchLog = await this.scoreRepository.findMatchLogByMatchId(match.id);
+    let matchLog = await this.scoreRepository.findMatchLogByMatchId(match.id);
 
     if (matchLog.remainingUndos === 0) {
       throw new BusinessException('Não é possível desfazer a jogada');
@@ -26,10 +26,7 @@ class UndoScoreUseCase {
       sequence: matchLog.scoreSequence - 1,
     });
 
-    this.publishScore(match, previousScore);
-    this.addMessage(match);
-
-    await this.scoreRepository.updateMatchLog({
+    matchLog = await this.scoreRepository.updateMatchLog({
       matchId: match.id,
     }, {
       $inc: {
@@ -39,10 +36,16 @@ class UndoScoreUseCase {
       },
     });
 
-    return matchLog.remainingUndos > 1;
+    this.publishScore(match, matchLog, previousScore);
+    await this.addMessage(match);
+
+    return {
+      canUndo: matchLog.remainingUndos > 0,
+      canRedo: matchLog.remainingRedos > 0,
+    };
   }
 
-  async publishScore(match, scoreLog) {
+  async publishScore(match, matchLog, scoreLog) {
     const topicMap = {
       Set1_A: scoreLog.set1A,
       Set1_B: scoreLog.set1B,
@@ -58,12 +61,16 @@ class UndoScoreUseCase {
       Player_Serving: scoreLog.playerServing,
       Match_Winner: scoreLog.matchWinner,
       Current_State: scoreLog.currentState,
+      Can_Undo: matchLog.remainingUndos > 0 ? 'true' : 'false',
+      Can_Redo: matchLog.remainingRedos > 0 ? 'true' : 'false',
     };
 
     Object.entries(topicMap)
       .forEach(([topic, value]) => this.broker.publish({
         topic: `${match.brokerTopic}/${topic}`,
-        payload: Buffer.from(value.toString()),
+        payload: Buffer.from(value === null || value === undefined
+          ? 'null'
+          : value.toString()),
         qos: 1,
         retain: true,
       }));

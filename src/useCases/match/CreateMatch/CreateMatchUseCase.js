@@ -217,6 +217,8 @@ class CreateMatchUseCase {
       setsWonA: 0,
       setsWonB: 0,
       playerServing: null,
+      matchWinner: null,
+      currentState: 'GAME',
     });
 
     this.scoreRepository.createMessageLog({

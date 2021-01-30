@@ -48,11 +48,17 @@ class ScoreRepository {
   }
 
   async updateMatchLog(where, update) {
-    return await MatchLog.updateOne(where, update);
+    return await MatchLog.findOneAndUpdate(where, update, {
+      new: true,
+      useFindAndModify: true,
+    });
   }
 
   async updateScoreLog(where, update) {
-    return await ScoreLog.updateOne(where, update);
+    return await ScoreLog.findOneAndUpdate(where, update, {
+      new: true,
+      useFindAndModify: true,
+    });
   }
 
   async getLogsByMatchId(matchId, { page, limit }) {

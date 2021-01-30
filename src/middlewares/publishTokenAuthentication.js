@@ -10,7 +10,7 @@ const matchRepository = container.resolve('matchRepository');
  */
 async function publishTokenAuthenticationMiddleware(request, response, next) {
   try {
-    const { authorization: token } = request.headers;
+    const { 'x-publish-token': token } = request.headers;
 
     if (!token) {
       throw new BusinessException('Acesso negado');
@@ -26,7 +26,6 @@ async function publishTokenAuthenticationMiddleware(request, response, next) {
 
     return next();
   } catch (error) {
-    console.log(error);
     return response.status(401).json({ message: error.message });
   }
 }

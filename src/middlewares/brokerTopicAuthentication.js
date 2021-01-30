@@ -8,7 +8,7 @@ const matchRepository = container.resolve('matchRepository');
  * @param response
  * @param next
  */
-async function brokerTopicAuthenticationMiddlware(request, response, next) {
+async function brokerTopicAuthenticationMiddleware(request, response, next) {
   try {
     const { 'x-broker-topic': token } = request.headers;
 
@@ -26,9 +26,8 @@ async function brokerTopicAuthenticationMiddlware(request, response, next) {
 
     return next();
   } catch (error) {
-    console.log(error);
     return response.status(401).json({ message: error.message });
   }
 }
 
-module.exports = brokerTopicAuthenticationMiddlware;
+module.exports = brokerTopicAuthenticationMiddleware;

@@ -15,9 +15,9 @@ class UndoScoreController {
   async handle(request, response) {
     const { match } = response.locals;
 
-    const canUndo = await this.undoScoreUseCase.execute(match);
+    const result = await this.undoScoreUseCase.execute(match);
 
-    return response.status(200).json({ canUndo });
+    return response.status(200).json(result);
   }
 }
 

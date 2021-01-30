@@ -1,6 +1,5 @@
 const { addMinutes } = require('date-fns');
 const BusinessException = require('../../../exceptions/BusinessException');
-const NotFoundException = require('../../../exceptions/NotFoundException');
 const MatchRepository = require('../../../repositories/matchRepository');
 const validateSchema = require('../../../utils/validation');
 const CheckPinValidator = require('./CheckPinValidator');

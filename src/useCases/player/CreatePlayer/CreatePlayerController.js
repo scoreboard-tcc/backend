@@ -16,8 +16,6 @@ class CreatePlayerController {
     const { id: academyId } = response.locals.user.academy;
     const player = await this.createPlayerUseCase.execute(request.body, academyId);
 
-    console.log('player criadonnn');
-
     return response.status(201).json(player);
   }
 }
