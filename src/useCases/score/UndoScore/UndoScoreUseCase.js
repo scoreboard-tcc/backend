@@ -23,6 +23,7 @@ class UndoScoreUseCase {
     }
 
     const previousScore = await this.scoreRepository.findScoreLog({
+      matchId: match.id,
       sequence: matchLog.scoreSequence - 1,
     });
 

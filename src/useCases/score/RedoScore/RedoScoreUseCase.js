@@ -23,6 +23,7 @@ class RedoScoreUseCase {
     }
 
     const nextScore = await this.scoreRepository.findScoreLog({
+      matchId: match.id,
       sequence: matchLog.scoreSequence + 1,
     });
 

@@ -40,7 +40,7 @@ class AddScoreUseCase {
       currentSet: fieldMap.Current_Set,
       setsWonA: fieldMap.SetsWon_A,
       setsWonB: fieldMap.SetsWon_B,
-      playerServing: fieldMap.Player_Serving,
+      playerServing: fieldMap.Player_Serving === 'null' ? null : fieldMap.Player_Serving,
       matchWinner: fieldMap.Match_Winner === 'null' ? null : fieldMap.Match_Winner,
       currentState: fieldMap.Current_State,
       ...playerData,
@@ -70,7 +70,7 @@ class AddScoreUseCase {
         qos: 2,
         retain: true,
       });
-    }, [150]);
+    }, [200]);
     // Não funciona se tirar o setTimeout...
 
     await this.addMessage(match, fieldMap, playerData);
