@@ -77,7 +77,7 @@ class MatchRepository {
   // Buscar partida em andamento pelo id
   // Acesso: público
   async findByMatchIdAndIngame(matchId, isCoordinator = false) {
-    const pin = '"Match"."pin" is not null as pin';
+    const hasPin = '"Match"."pin" is not null as hasPin';
 
     const match = await createQuery(tableName)
       .select('Match.id as id', 'player1Name', 'player2Name', 'player1Id', 'player2Id', 'brokerTopic', 'startedAt',
@@ -87,7 +87,8 @@ class MatchRepository {
         'tieBreakType',
         'scoringType',
         'hasAdvantage',
-        createQuery.knexInstance.raw(pin))
+        'pin',
+        createQuery.knexInstance.raw(hasPin))
       .leftJoin('Scoreboard', 'Match.scoreboardId', 'Scoreboard.id')
       .where('Match.id', '=', matchId)
       .andWhere('status', '=', 'INGAME')
@@ -97,8 +98,9 @@ class MatchRepository {
       return null;
     }
 
-    if (!isCoordinator && match.pin) {
+    if (!isCoordinator && match.hasPin) {
       delete match.brokerTopic;
+      delete match.pin;
     }
 
     return ({
@@ -114,6 +116,7 @@ class MatchRepository {
       tieBreakType: match.tieBreakType,
       scoringType: match.scoringType,
       hasAdvantage: match.hasAdvantage,
+      pin: match.pin,
       scoreboard: match.scoreboardId ? {
         id: match.scoreboardId,
       } : null,
