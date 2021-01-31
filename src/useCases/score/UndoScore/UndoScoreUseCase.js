@@ -78,7 +78,7 @@ class UndoScoreUseCase {
   }
 
   async addMessage(match) {
-    const message = 'A jogada foi desfeita (TODO: melhorar)';
+    const message = 'A jogada foi desfeita.';
 
     await this.scoreRepository.createMessageLog({
       matchId: match.id,

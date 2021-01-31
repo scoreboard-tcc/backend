@@ -78,7 +78,7 @@ class RedoScoreUseCase {
   }
 
   async addMessage(match) {
-    const message = 'A jogada foi refeita (TODO: melhorar)';
+    const message = 'A jogada foi refeita.';
 
     await this.scoreRepository.createMessageLog({
       matchId: match.id,

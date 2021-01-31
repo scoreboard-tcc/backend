@@ -72,7 +72,9 @@ async function processScorePacket(match, topic, packet) {
     addScoreUseCase.execute(match, fieldMap);
 
     if (Match_Winner !== 'null') {
-      finishMatchUseCase.execute(match);
+      setTimeout(() => {
+        finishMatchUseCase.execute(match);
+      }, 5000);
     }
   } catch (error) {
     console.log(error);
