@@ -129,6 +129,7 @@ class CreateMatchUseCase {
       tieBreakType: request.tieBreakType,
       scoringType: request.scoringType,
       hasAdvantage: request.hasAdvantage,
+      startedAt: new Date(),
     };
 
     const [id] = await this.matchRepository.create(match);
