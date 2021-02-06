@@ -40,6 +40,7 @@ class ChangeControlUseCase {
       controllerSequence: await this.getControllerSequence(match),
       brokerTopic: match.brokerTopic,
       expirationDate: tokenExpiration,
+      matchId: match.id,
     };
   }
 

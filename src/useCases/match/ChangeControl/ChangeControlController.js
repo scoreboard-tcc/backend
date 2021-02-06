@@ -13,7 +13,7 @@ class ChangeControlController {
   }
 
   async handle(request, response) {
-    const { refreshToken } = request.query;
+    const { refreshToken } = request.body;
 
     const tokens = await this.changeControlUseCase.execute(refreshToken);
 

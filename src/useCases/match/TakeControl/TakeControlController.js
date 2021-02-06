@@ -15,7 +15,7 @@ class TakeControlController {
 
   async handle(request, response) {
     const { id: academyId } = response.locals.user.academy;
-    const { matchId } = request.params;
+    const { matchId } = request.body;
 
     if (!academyId) {
       throw new ValidationException('Necessário informar o id da academia');
