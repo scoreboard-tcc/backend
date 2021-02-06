@@ -98,7 +98,7 @@ class MatchRepository {
       return null;
     }
 
-    if (!isCoordinator && match.hasPin) {
+    if (!isCoordinator && match.haspin) {
       delete match.brokerTopic;
       delete match.pin;
     }
