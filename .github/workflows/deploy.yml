@@ -14,10 +14,9 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: '12.18.2'
-    - name: Install yarn and run unittest
+    - name: Install yarn
       run: |
         yarn
-        yarn test
       env:
         CI: true
     - name: Publish to Github Packages Registry
@@ -38,14 +37,21 @@ jobs:
         POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
         MONGO_URL: ${{ secrets.MONGO_URL }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+        FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+        FIREBASE_UPLOAD_PATH: ${{ secrets.FIREBASE_UPLOAD_PATH }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        BROKER_PERSISTENCE_URL: ${{ secrets.BROKER_PERSISTENCE_URL }}
+        BROKER_STANDALONE_PORT: ${{ secrets.BROKER_STANDALONE_PORT }}
+        BROKER_WS_PORT: ${{ secrets.BROKER_WS_PORT }}
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        envs: IMAGE, GH_USERNAME, GITHUB_TOKEN, POSTGRES_URL, MONGO_URL, JWT_SECRET
+        envs: IMAGE, GH_USERNAME, GITHUB_TOKEN, POSTGRES_URL, MONGO_URL, JWT_SECRET, FIREBASE_DATABASE_URL, FIREBASE_STORAGE_BUCKET, FIREBASE_UPLOAD_PATH, GOOGLE_APPLICATION_CREDENTIALS, BROKER_PERSISTENCE_URL, BROKER_STANDALONE_PORT,BROKER_WS_PORT
         script: |
           docker stop $IMAGE || true
           docker login docker.pkg.github.com -u $GH_USERNAME -p $GITHUB_TOKEN
           docker pull docker.pkg.github.com/scoreboard-tcc/backendnovo/$IMAGE:latest
-          docker run -dit -p 8080:8080 -p 8081:8081 -e POSTGRES_URL=$POSTGRES_URL -e MONGO_URL=$MONGO_URL -e JWT_SECRET=$JWT_SECRET docker.pkg.github.com/scoreboard-tcc/backendnovo/$IMAGE:latest
+          docker run -dit -p 8080:8080 -p 8081:8081 -e POSTGRES_URL=$POSTGRES_URL -e MONGO_URL=$MONGO_URL -e JWT_SECRET=$JWT_SECRET -e FIREBASE_DATABASE_URL=$FIREBASE_DATABASE_URL -e FIREBASE_STORAGE_BUCKET=$FIREBASE_STORAGE_BUCKET -e FIREBASE_UPLOAD_PATH=$FIREBASE_UPLOAD_PATH -e GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS -e BROKER_PERSISTENCE_URL=$BROKER_PERSISTENCE_URL -e BROKER_STANDALONE_PORT=$BROKER_STANDALONE_PORT -e BROKER_WS_PORT=$BROKER_WS_PORT docker.pkg.github.com/scoreboard-tcc/backendnovo/$IMAGE:latest
