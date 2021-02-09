@@ -19,6 +19,10 @@ jobs:
         yarn
       env:
         CI: true
+    - name: Creates serviceAccountKey.json
+      run: |
+        touch serviceAccountKey.json
+        echo ${{secrets.FIREBASE_CONFIG}} >> serviceAccountKey.json
     - name: Publish to Github Packages Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
