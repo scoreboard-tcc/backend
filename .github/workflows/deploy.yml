@@ -27,6 +27,8 @@ jobs:
         rm tmp.txt
     - name: Publish to Github Packages Registry
       uses: elgohr/Publish-Docker-Github-Action@master
+      env:
+        POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
       with:
         name: scoreboard-tcc/backendnovo/backend
         registry: docker.pkg.github.com
@@ -34,6 +36,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         dockerfile: Dockerfile
         tags: latest
+        buildargs: POSTGRES_URL
     - name: Deploy package to digitalocean
       uses: appleboy/ssh-action@master
       env:

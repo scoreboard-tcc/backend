@@ -17,7 +17,7 @@ router.get('/checkIfSubdomainIsAvailable/:subdomain', wrap(async (request, respo
 
 router.post('/',
   upload.single('logo'),
-  transactionMiddleware,
+  // transactionMiddleware,
   wrap(async (request, response, next) => {
     await container.cradle.createAcademyController.handle(request, response, next);
   }));
