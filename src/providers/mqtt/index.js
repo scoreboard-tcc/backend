@@ -20,6 +20,8 @@ ws.createServer({
 
 const server = net.createServer(broker.handle);
 
+console.log({ brokerConfig });
+
 httpServer.listen(brokerConfig.wsPort, () => {
   console.log('Aedes server (WebSocket) running');
 });
