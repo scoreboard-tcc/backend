@@ -21,8 +21,10 @@ jobs:
         CI: true
     - name: Creates serviceAccountKey.json
       run: |
-        touch serviceAccountKey.json
-        echo ${{secrets.FIREBASE_CONFIG}} >> serviceAccountKey.json
+        touch tmp.txt
+        echo ${{ secrets.FIREBASE_CONFIG }} >> tmp.txt
+        openssl enc -base64 -A -d -in tmp.txt -out serviceAccountKey.json
+        rm tmp.txt
     - name: Publish to Github Packages Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
