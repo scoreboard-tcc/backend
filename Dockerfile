@@ -9,8 +9,8 @@ WORKDIR /usr/src/app
 COPY package*.json yarn.lock  ./ 
 RUN npm set progress=false && npm config set depth 0
 RUN npm install --only=production --silent
-RUN npm install -g knex
-RUN knex migrate:latest
+RUN npm install -g knex dotenv dotenv-cli
+RUN npm run migrate:latest
 
 COPY . .
 
