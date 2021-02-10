@@ -3,6 +3,7 @@ FROM node:14-alpine
 RUN apk --no-cache add --virtual builds-deps build-base python
 
 ENV NODE_ENV=production
+ARG POSTGRES_URL
 ENV POSTGRES_URL=$POSTGRES_URL
 
 WORKDIR /usr/src/app
@@ -15,6 +16,6 @@ RUN npx knex --env development migrate:latest
 
 COPY . .
 
-EXPOSE 8080 8081
+EXPOSE 1883 8080 8081
 
 CMD [ "npm", "start" ]
