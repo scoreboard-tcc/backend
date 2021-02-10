@@ -12,6 +12,7 @@ COPY package*.json yarn.lock  ./
 RUN npm set progress=false && npm config set depth 0
 RUN npm install --only=production --silent
 RUN npm install -g knex
+RUN echo $$POSTGRES_URL
 RUN npx knex --env development migrate:latest
 
 COPY . .
