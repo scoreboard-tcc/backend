@@ -15,8 +15,6 @@ RUN npm install -g knex
 
 COPY . .
 
-RUN npx knex --env development migrate:latest
-
 EXPOSE 1883 8080 8081
 
 CMD [ "npm", "start" ]
