@@ -6,10 +6,11 @@ ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 
-COPY package*.json yarn.lock ./
+COPY package*.json yarn.lock  ./ 
 RUN npm set progress=false && npm config set depth 0
 RUN npm install --only=production --silent
 RUN npm install -g knex
+RUN knex migrate:latest
 
 COPY . .
 
