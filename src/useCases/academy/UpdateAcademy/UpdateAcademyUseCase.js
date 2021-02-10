@@ -32,15 +32,19 @@ class UpdateAcademyUseCase {
     await this.checkIfAcademyExists(id);
     await this.checkIfSubdomainIsAlreadyUsed(request.subdomain, id);
 
-    const logoUrl = await this.uploadFileUseCase.execute(request.logo);
+    const logoUrl = request.logo
+      ? await this.uploadFileUseCase.execute(request.logo) : '';
 
     const payload = {
       name: request.name,
       subdomain: request.subdomain,
       address: request.address,
-      logoUrl,
       additionalInfo: request.additionalInfo,
     };
+
+    if (logoUrl) {
+      payload.logoUrl = logoUrl;
+    }
 
     await this.academyRepository.update(id, payload);
   }

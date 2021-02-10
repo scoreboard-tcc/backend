@@ -21,7 +21,5 @@ module.exports = {
 
     additionalInfo: Joi.string()
       .max(2000),
-
-    logo: Joi.any().required(),
   }).required(),
 };
