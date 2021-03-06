@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const ValidationException = require('../../../exceptions/ValidationException');

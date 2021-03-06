@@ -29,7 +29,7 @@ describe('GetAcademyByIdUseCase', () => {
 
   test('Retorna a academia', async () => {
     const mockAcademyRepository = {
-      findById: jest.fn(() => ({ id: 1 })),
+      findById: jest.fn(() => ({ id: 1, logoUrl: 'logo' })),
     };
 
     const useCase = new GetAcademyByIdUseCase({
@@ -38,6 +38,6 @@ describe('GetAcademyByIdUseCase', () => {
 
     const academy = await useCase.execute(1);
 
-    expect(academy).toStrictEqual({ id: 1 });
+    expect(academy).toStrictEqual({ id: 1, logoUrl: 'logo' });
   });
 });

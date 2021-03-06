@@ -35,6 +35,7 @@ exports.up = (knex) => knex.schema
       .timestamp('startedAt')
       .defaultTo(knex.fn.now());
 
+    // TODO: criar migration para remover
     table.integer('duration')
       .notNullable()
       .defaultTo(60);

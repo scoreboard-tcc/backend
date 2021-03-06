@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 const createQuery = require('../providers/database');
 
 const tableName = 'Match';
@@ -81,7 +82,6 @@ class MatchRepository {
 
     const match = await createQuery(tableName)
       .select('Match.id as id', 'player1Name', 'player2Name', 'player1Id', 'player2Id', 'brokerTopic', 'startedAt',
-        'duration',
         'scoreboardId',
         'description',
         'tieBreakType',
@@ -108,7 +108,6 @@ class MatchRepository {
       description: match.description || `Partida ${match.id}`,
       brokerTopic: match.brokerTopic,
       startedAt: match.startedAt,
-      duration: match.duration,
       player1Id: match.player1Id,
       player2Id: match.player2Id,
       player1Name: match.player1Name,
@@ -158,7 +157,7 @@ class MatchRepository {
   // Acesso: público
   async findByMatchIdAndPinAndIngame(matchId, pin) {
     return createQuery(tableName)
-      .select('id', 'brokerTopic', 'startedAt', 'duration')
+      .select('id', 'brokerTopic', 'startedAt')
       .where('id', '=', matchId)
       .andWhere('pin', '=', pin)
       .andWhere('status', '=', 'INGAME')
@@ -197,7 +196,6 @@ class MatchRepository {
       id: match.id,
       brokerTopic: match.brokerTopic,
       startedAt: match.startedAt,
-      duration: match.duration,
       scoreboard: match.scoreboardId ? {
         id: match.scoreboardId,
         serialNumber: match.serialNumber,

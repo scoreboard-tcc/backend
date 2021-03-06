@@ -1,4 +1,3 @@
-const { addMinutes } = require('date-fns');
 const { v4: uuid } = require('uuid');
 const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
@@ -11,7 +10,6 @@ const { isEmpty } = require('../../../utils/string');
 
 const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
-const ScheduleFinishUseCase = require('../ScheduleFinish/ScheduleFinishUseCase');
 const CreateMatchValidator = require('./CreateMatchValidator');
 
 class CreateMatchUseCase {
@@ -26,12 +24,11 @@ class CreateMatchUseCase {
    * @param {PlayerRepository} container.playerRepository - PlayerRepository
    * @param {ScoreRepository} container.scoreRepository - ScoreRepository
    * @param container.broker
-   * @param {ScheduleFinishUseCase} container.scheduleFinishUseCase - ScheduleFinishUseCase
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    */
   constructor({
     getAcademyByIdUseCase, scoreboardRepository, enrollmentRepository, matchRepository, playerRepository,
-    scoreRepository, broker, scheduleFinishUseCase,
+    scoreRepository, broker,
   }) {
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.scoreboardRepository = scoreboardRepository;
@@ -40,7 +37,6 @@ class CreateMatchUseCase {
     this.playerRepository = playerRepository;
     this.scoreRepository = scoreRepository;
     this.broker = broker;
-    this.scheduleFinishUseCase = scheduleFinishUseCase;
   }
 
   validate(request) {
@@ -116,7 +112,6 @@ class CreateMatchUseCase {
     const match = {
       academyId,
       scoreboardId: request.scoreboardId,
-      duration: request.duration,
       player1Id: request.player1Id,
       player2Id: request.player2Id,
       player1Name: await this.getPlayerName(request.player1Id, request.player1Name, academyId),
@@ -134,20 +129,16 @@ class CreateMatchUseCase {
 
     const [id] = await this.matchRepository.create(match);
 
-    const tokenExpiration = addMinutes(new Date(), request.duration);
-
     this.publishInitialData(match.brokerTopic);
 
     const createdMatch = await this.matchRepository.findByMatchIdAndIngame(id);
 
     this.createInitialScore(createdMatch);
-    this.scheduleFinishUseCase.execute(createdMatch);
 
     return {
       id,
       publishToken,
       refreshToken,
-      expirationDate: tokenExpiration,
       controllerSequence: 0,
     };
   }

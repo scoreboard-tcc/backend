@@ -3,11 +3,6 @@ const Joi = require('joi');
 module.exports = Joi.object({
   scoreboardId: Joi.number().allow(null),
 
-  duration: Joi.number()
-    .min(15)
-    .max(60 * 5)
-    .required(),
-
   player1Id: Joi.number().allow(null),
 
   player2Id: Joi.number().allow(null),

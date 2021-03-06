@@ -1,4 +1,3 @@
-const { addMinutes } = require('date-fns');
 const { v4: uuid } = require('uuid');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const MatchRepository = require('../../../repositories/matchRepository');
@@ -33,13 +32,10 @@ class ChangeControlUseCase {
       throw new NotFoundException('partida', 'token', refreshToken);
     }
 
-    const tokenExpiration = addMinutes(new Date(match.startedAt), match.duration);
-
     return {
       ...await this.generateNewTokens(match),
       controllerSequence: await this.getControllerSequence(match),
       brokerTopic: match.brokerTopic,
-      expirationDate: tokenExpiration,
       matchId: match.id,
     };
   }

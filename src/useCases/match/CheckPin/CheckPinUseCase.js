@@ -1,4 +1,3 @@
-const { addMinutes } = require('date-fns');
 const BusinessException = require('../../../exceptions/BusinessException');
 const MatchRepository = require('../../../repositories/matchRepository');
 const validateSchema = require('../../../utils/validation');
@@ -32,7 +31,6 @@ class CheckPinUseCase {
     return {
       id: match.id,
       brokerTopic: match.brokerTopic,
-      expiration: addMinutes(new Date(match.startedAt), match.duration),
     };
   }
 }
