@@ -1,4 +1,5 @@
 const MatchRepository = require('../../../repositories/matchRepository');
+const GetMatchByIdUseCase = require('../GetMatchById/GetMatchByIdUseCase');
 
 class FinishMatchUseCase {
   /**
@@ -7,11 +8,13 @@ class FinishMatchUseCase {
    * @class
    * @param {object} container - Container
    * @param container.broker
+   * @param {GetMatchByIdUseCase} container.getMatchByIdUseCase - GetMatchByIdUseCase
    * @param {MatchRepository} container.matchRepository - MatchRepository
    */
-  constructor({ matchRepository, broker }) {
+  constructor({ matchRepository, broker, getMatchByIdUseCase }) {
     this.matchRepository = matchRepository;
     this.broker = broker;
+    this.getMatchByIdUseCase = getMatchByIdUseCase;
   }
 
   async execute(match) {
@@ -24,6 +27,12 @@ class FinishMatchUseCase {
     if (match.scoreboard) {
       this.clearRetainedMessages(match.scoreboard.serialNumber);
     }
+  }
+
+  async executeByMatchId(matchId) {
+    const match = await this.getMatchByIdUseCase.execute(matchId);
+
+    return await this.execute(match);
   }
 
   clearRetainedMessages(brokerTopic) {

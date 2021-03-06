@@ -24,4 +24,8 @@ router.post('/takeControl', wrap(async (request, response) => {
   await container.cradle.takeControlController.handle(request, response);
 }));
 
+router.post('/finish/:matchId', wrap(async (request, response) => {
+  await container.cradle.finishMatchController.handle(request, response);
+}));
+
 module.exports = router;
