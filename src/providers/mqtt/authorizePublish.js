@@ -51,10 +51,7 @@ async function authorizePublish(client, packet, callback) {
     packet.payload = Buffer.from(data.payload);
 
     return callback(null);
-
-    // TODO: verificar o ScoreConfirmation
   } catch (error) {
-    console.log(error);
     return callback(new Error('Error'));
   }
 }

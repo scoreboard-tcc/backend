@@ -10,7 +10,6 @@ const finishMatchUseCase = container.resolve('finishMatchUseCase');
  */
 async function execute() {
   const ingameMatches = await matchRepository.findByIngame();
-  console.log('LIMPANDO!!!', new Date());
 
   ingameMatches.forEach((match) => {
     finishMatchUseCase.execute(match);

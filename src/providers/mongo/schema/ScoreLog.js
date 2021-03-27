@@ -7,7 +7,7 @@ const schema = new Schema({
   sequence: Number,
   playerId: Number,
   playerName: String,
-  scoreType: String, // TODO: usar enum?
+  scoreType: String,
   set1A: Number,
   set1B: Number,
   set2A: Number,

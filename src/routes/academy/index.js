@@ -3,7 +3,6 @@ const multer = require('multer');
 
 const container = require('../../container');
 const adminAuthenticationMiddleware = require('../../middlewares/adminAuthentication');
-const { transactionMiddleware } = require('../../middlewares/transaction');
 const wrap = require('../../utils/wrapRoute');
 
 const upload = multer();
@@ -17,7 +16,6 @@ router.get('/checkIfSubdomainIsAvailable/:subdomain', wrap(async (request, respo
 
 router.post('/',
   upload.single('logo'),
-  // transactionMiddleware,
   wrap(async (request, response, next) => {
     await container.cradle.createAcademyController.handle(request, response, next);
   }));
