@@ -1,5 +1,29 @@
 version: '3.7'
 services:
+
+  backend:
+    image: docker.pkg.github.com/scoreboard-tcc/backendnovo/backend:latest
+    restart: always
+    environment:
+      - APP_PORT
+      - BROKER_WS_PORT
+      - BROKER_STANDALONE_PORT
+      - POSTGRES_URL
+      - MONGO_URL
+      - JWT_SECRET
+      - FIREBASE_DATABASE_URL
+      - FIREBASE_STORAGE_BUCKET
+      - FIREBASE_UPLOAD_PATH
+      - GOOGLE_APPLICATION_CREDENTIALS
+      - BROKER_PERSISTENCE_URL
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+      - "${BROKER_WS_PORT}:${BROKER_WS_PORT}"
+      - "${BROKER_STANDALONE_PORT}:${BROKER_STANDALONE_PORT}"
+    depends_on:
+      - database
+      - mongo
+
   database:
     image: postgres
     restart: always
