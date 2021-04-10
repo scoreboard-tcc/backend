@@ -19,12 +19,6 @@ jobs:
         yarn
       env:
         CI: true
-    - name: Creates serviceAccountKey.json
-      run: |
-        touch tmp.txt
-        echo ${{ secrets.FIREBASE_CONFIG }} >> tmp.txt
-        openssl enc -base64 -A -d -in tmp.txt -out serviceAccountKey.json
-        rm tmp.txt
     - name: Publish to Github Packages Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       env:
@@ -43,24 +37,13 @@ jobs:
         IMAGE: backend
         GH_USERNAME: ${{ secrets.GH_USERNAME }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-        MONGO_URL: ${{ secrets.MONGO_URL }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
-        FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
-        FIREBASE_UPLOAD_PATH: ${{ secrets.FIREBASE_UPLOAD_PATH }}
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        BROKER_PERSISTENCE_URL: ${{ secrets.BROKER_PERSISTENCE_URL }}
-        BROKER_STANDALONE_PORT: ${{ secrets.BROKER_STANDALONE_PORT }}
-        BROKER_WS_PORT: ${{ secrets.BROKER_WS_PORT }}
-        APP_PORT: ${{ secrets.APP_PORT }}
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        envs: IMAGE, GH_USERNAME, GITHUB_TOKEN, POSTGRES_URL, MONGO_URL, JWT_SECRET, FIREBASE_DATABASE_URL, FIREBASE_STORAGE_BUCKET, FIREBASE_UPLOAD_PATH, GOOGLE_APPLICATION_CREDENTIALS, BROKER_PERSISTENCE_URL, BROKER_STANDALONE_PORT,BROKER_WS_PORT, APP_PORT
+        envs: IMAGE, GH_USERNAME, GITHUB_TOKEN
         script: |
           docker login docker.pkg.github.com -u $GH_USERNAME -p $GITHUB_TOKEN
-          POSTGRES_URL=$POSTGRES_URL MONGO_URL=$MONGO_URL JWT_SECRET=$JWT_SECRET FIREBASE_DATABASE_URL=$FIREBASE_DATABASE_URL FIREBASE_STORAGE_BUCKET=$FIREBASE_STORAGE_BUCKET FIREBASE_UPLOAD_PATH=$FIREBASE_UPLOAD_PATH GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS BROKER_PERSISTENCE_URL=$BROKER_PERSISTENCE_URL BROKER_STANDALONE_PORT=$BROKER_STANDALONE_PORT BROKER_WS_PORT=$BROKER_WS_PORT APP_PORT=$APP_PORT docker-compose stop $IMAGE || true
-          POSTGRES_URL=$POSTGRES_URL MONGO_URL=$MONGO_URL JWT_SECRET=$JWT_SECRET FIREBASE_DATABASE_URL=$FIREBASE_DATABASE_URL FIREBASE_STORAGE_BUCKET=$FIREBASE_STORAGE_BUCKET FIREBASE_UPLOAD_PATH=$FIREBASE_UPLOAD_PATH GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS BROKER_PERSISTENCE_URL=$BROKER_PERSISTENCE_URL BROKER_STANDALONE_PORT=$BROKER_STANDALONE_PORT BROKER_WS_PORT=$BROKER_WS_PORT APP_PORT=$APP_PORT docker-compose up --force-recreate --build -d $IMAGE
+          docker-compose stop $IMAGE || true
+          docker-compose up --force-recreate --build -d $IMAGE
