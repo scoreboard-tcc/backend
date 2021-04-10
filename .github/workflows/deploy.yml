@@ -44,7 +44,8 @@ jobs:
         port: ${{ secrets.PORT }}
         envs: IMAGE, GH_USERNAME, GITHUB_TOKEN
         script: |
-          cd tcc
+          pwd
+          cd /root/tcc
           docker login docker.pkg.github.com -u $GH_USERNAME -p $GITHUB_TOKEN
           docker-compose stop $IMAGE || true
           docker-compose up --force-recreate --build -d $IMAGE
