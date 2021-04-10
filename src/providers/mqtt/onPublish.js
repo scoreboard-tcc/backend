@@ -91,14 +91,14 @@ function shouldIgnorePacket(packet) {
 }
 
 /**
- * @param scoreboardAndMatchTopics
+ * @param match
  * @param topic
  * @param field
  * @param packet
  */
-async function forwardPacket(scoreboardAndMatchTopics, topic, field, packet) {
-  const topicToForward = scoreboardAndMatchTopics.brokerTopic === topic
-    ? scoreboardAndMatchTopics.serialNumber : scoreboardAndMatchTopics.brokerTopic;
+async function forwardPacket(match, topic, field, packet) {
+  const topicToForward = match.brokerTopic === topic
+    ? match.serialNumber : match.brokerTopic;
 
   broker.publish({
     topic: `${topicToForward}/${field}`,
