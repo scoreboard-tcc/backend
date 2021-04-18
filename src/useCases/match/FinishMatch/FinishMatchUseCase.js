@@ -1,5 +1,6 @@
 const MatchRepository = require('../../../repositories/matchRepository');
 const GetMatchByIdUseCase = require('../GetMatchById/GetMatchByIdUseCase');
+const FinishMatchValidator = require('./FinishMatchValidator');
 
 class FinishMatchUseCase {
   /**
@@ -9,15 +10,21 @@ class FinishMatchUseCase {
    * @param {object} container - Container
    * @param container.broker
    * @param {GetMatchByIdUseCase} container.getMatchByIdUseCase - GetMatchByIdUseCase
+   * @param {FinishMatchValidator} container.finishMatchValidator
    * @param {MatchRepository} container.matchRepository - MatchRepository
    */
-  constructor({ matchRepository, broker, getMatchByIdUseCase }) {
+  constructor({
+    matchRepository, broker, getMatchByIdUseCase, finishMatchValidator,
+  }) {
     this.matchRepository = matchRepository;
     this.broker = broker;
     this.getMatchByIdUseCase = getMatchByIdUseCase;
+    this.finishMatchValidator = finishMatchValidator;
   }
 
   async execute(match) {
+    this.finishMatchValidator.validate(match);
+
     await this.matchRepository.updateMatchById(match.id, {
       status: 'FINISHED',
     });

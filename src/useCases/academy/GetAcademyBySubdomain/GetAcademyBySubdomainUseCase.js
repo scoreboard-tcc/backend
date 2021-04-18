@@ -1,7 +1,6 @@
 const firebaseConfig = require('../../../config/firebase');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const AcademyRepository = require('../../../repositories/academyRepository');
-const validateSchema = require('../../../utils/validation');
 const GetAcademyBySubdomainValidator = require('./GetAcademyBySubdomainValidator');
 
 class GetAcademyPublicDataBySubdomainUseCase {
@@ -10,18 +9,16 @@ class GetAcademyPublicDataBySubdomainUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {GetAcademyBySubdomainValidator} container.getAcademyBySubdomainValidator
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    */
-  constructor({ academyRepository }) {
+  constructor({ academyRepository, getAcademyBySubdomainValidator }) {
     this.academyRepository = academyRepository;
-  }
-
-  validate(id) {
-    validateSchema(GetAcademyBySubdomainValidator, id);
+    this.getAcademyBySubdomainValidator = getAcademyBySubdomainValidator;
   }
 
   async execute(subdomain) {
-    this.validate(subdomain);
+    this.getAcademyBySubdomainValidator.validate(subdomain);
 
     const academy = await this.academyRepository.findBySubdomain(subdomain);
 

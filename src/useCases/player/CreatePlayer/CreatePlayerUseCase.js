@@ -1,7 +1,6 @@
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const PlayerRepository = require('../../../repositories/playerRepository');
-const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
 const LinkPlayerToAcademyUseCase = require('../LinkPlayerToAcademy/LinkPlayerToAcademyUseCase');
 const CreatePlayerValidator = require('./CreatePlayerValidator');
@@ -15,24 +14,21 @@ class CreatePlayerUseCase {
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    * @param {PlayerRepository} container.playerRepository - PlayerRepository
    * @param {LinkPlayerToAcademyUseCase} container.linkPlayerToAcademyUseCase - LinkPlayerToAcademyUseCase
+   * @param {CreatePlayerValidator} container.createPlayerValidator
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    */
   constructor({
-    playerRepository, academyRepository, getAcademyByIdUseCase, linkPlayerToAcademyUseCase,
+    playerRepository, academyRepository, getAcademyByIdUseCase, linkPlayerToAcademyUseCase, createPlayerValidator,
   }) {
     this.playerRepository = playerRepository;
     this.academyRepository = academyRepository;
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.linkPlayerToAcademyUseCase = linkPlayerToAcademyUseCase;
-  }
-
-  validate(request, academyId) {
-    validateSchema(CreatePlayerValidator.player, request);
-    validateSchema(CreatePlayerValidator.academyId, academyId);
+    this.createPlayerValidator = createPlayerValidator;
   }
 
   async execute(request, academyId) {
-    this.validate(request, academyId);
+    this.createPlayerValidator.validate(request);
 
     await this.checkIfEmailIsAlreadyUsed(request.email);
     const playerId = await this.createPlayer(request);

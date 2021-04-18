@@ -1,6 +1,5 @@
 const BusinessException = require('../../../exceptions/BusinessException');
 const MatchRepository = require('../../../repositories/matchRepository');
-const validateSchema = require('../../../utils/validation');
 const CheckPinValidator = require('./CheckPinValidator');
 
 class CheckPinUseCase {
@@ -9,18 +8,16 @@ class CheckPinUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {CheckPinValidator} container.checkPinValidator
    * @param {MatchRepository} container.matchRepository - MatchRepository
    */
-  constructor({ matchRepository }) {
+  constructor({ matchRepository, checkPinValidator }) {
     this.matchRepository = matchRepository;
-  }
-
-  validate(request) {
-    validateSchema(CheckPinValidator, request);
+    this.checkPinValidator = checkPinValidator;
   }
 
   async execute(request) {
-    this.validate(request);
+    this.checkPinValidator.validate(request);
 
     const match = await this.matchRepository.findByMatchIdAndPinAndIngame(request.matchId, request.pin);
 

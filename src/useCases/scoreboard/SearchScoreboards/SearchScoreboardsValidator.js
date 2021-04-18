@@ -1,6 +1,12 @@
 const Joi = require('joi');
+const validateSchema = require('../../../utils/validation');
 
-module.exports = {
-  academyId: Joi.number().required(),
-  search: Joi.string().allow('').optional(),
-};
+const schema = Joi.string().allow('').optional();
+
+class SearchScoreboardsValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
+
+module.exports = SearchScoreboardsValidator;

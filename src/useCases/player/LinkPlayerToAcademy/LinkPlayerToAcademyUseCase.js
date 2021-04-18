@@ -2,7 +2,6 @@ const BusinessException = require('../../../exceptions/BusinessException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const EnrollmentRepository = require('../../../repositories/enrollmentRepository');
 const PlayerRepository = require('../../../repositories/playerRepository');
-const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
 const LinkPlayerToAcademyValidator = require('./LinkPlayerToAcademyValidator');
 
@@ -14,22 +13,20 @@ class LinkPlayerToAcademyUseCase {
    * @param {object} container - Container
    * @param {PlayerRepository} container.playerRepository - PlayerRepository
    * @param {EnrollmentRepository} container.enrollmentRepository - EnrollmentRepository
+   * @param {LinkPlayerToAcademyValidator} container.linkPlayerToAcademyValidator
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    */
   constructor({
-    playerRepository, getAcademyByIdUseCase, enrollmentRepository,
+    playerRepository, getAcademyByIdUseCase, enrollmentRepository, linkPlayerToAcademyValidator,
   }) {
     this.playerRepository = playerRepository;
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.enrollmentRepository = enrollmentRepository;
-  }
-
-  validate(request) {
-    validateSchema(LinkPlayerToAcademyValidator, request);
+    this.linkPlayerToAcademyValidator = linkPlayerToAcademyValidator;
   }
 
   async execute(request) {
-    this.validate(request);
+    this.linkPlayerToAcademyValidator.validate(request);
 
     await this.checkIfPlayerExists(request.playerId);
     await this.getAcademyByIdUseCase.execute(request.academyId);

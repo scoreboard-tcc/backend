@@ -1,7 +1,6 @@
 const firebaseConfig = require('../../../config/firebase');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const AcademyRepository = require('../../../repositories/academyRepository');
-const validateSchema = require('../../../utils/validation');
 
 const GetAcademyByIdValidator = require('./GetAcademyByIdValidator');
 
@@ -11,18 +10,16 @@ class GetAcademyByIdUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {GetAcademyByIdValidator} container.getAcademyByIdValidator
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    */
-  constructor({ academyRepository }) {
+  constructor({ academyRepository, getAcademyByIdValidator }) {
     this.academyRepository = academyRepository;
-  }
-
-  validate(id) {
-    validateSchema(GetAcademyByIdValidator, id);
+    this.getAcademyByIdValidator = getAcademyByIdValidator;
   }
 
   async execute(id) {
-    this.validate(id);
+    this.getAcademyByIdValidator.validate(id);
 
     return this.getAcademy(id);
   }

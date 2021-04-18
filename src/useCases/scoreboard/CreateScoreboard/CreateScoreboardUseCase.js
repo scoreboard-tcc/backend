@@ -1,7 +1,7 @@
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
+const BusinessException = require('../../../exceptions/BusinessException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const ScoreboardRepository = require('../../../repositories/scoreboardRepository');
-const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
 const CreateScoreboardValidator = require('./CreateScoreboardValidator');
 
@@ -13,20 +13,24 @@ class CreateScoreboardUseCase {
    * @param {object} container - Container
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
+   * @param {CreateScoreboardValidator} container.createScoreboardValidator
    * @param {ScoreboardRepository} container.scoreboardRepository - ScoreboardRepository
    */
-  constructor({ academyRepository, scoreboardRepository, getAcademyByIdUseCase }) {
+  constructor({
+    academyRepository, scoreboardRepository, getAcademyByIdUseCase, createScoreboardValidator,
+  }) {
     this.academyRepository = academyRepository;
     this.scoreboardRepository = scoreboardRepository;
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
-  }
-
-  validate(request) {
-    validateSchema(CreateScoreboardValidator, request);
+    this.createScoreboardValidator = createScoreboardValidator;
   }
 
   async execute(academyId, request) {
-    this.validate(request);
+    this.createScoreboardValidator.validate(request);
+
+    if (request.length) {
+      this.validateRepeatedSerialNumber(request);
+    }
 
     await this.getAcademyByIdUseCase.execute(academyId);
 
@@ -35,6 +39,14 @@ class CreateScoreboardUseCase {
     const promises = scoreboards.map((scoreboard) => this.createScoreboard(scoreboard));
 
     return Promise.all(promises);
+  }
+
+  validateRepeatedSerialNumber(request) {
+    const serialNumbers = request.map((scoreboard) => scoreboard.serialNumber);
+
+    if (new Set(serialNumbers).size !== serialNumbers.length) {
+      throw new BusinessException('O identificador único não pode repetir');
+    }
   }
 
   prepareScoreboardsForInsertion(academyId, scoreboardPayload) {

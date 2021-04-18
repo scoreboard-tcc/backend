@@ -1,7 +1,6 @@
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const MatchRepository = require('../../../repositories/matchRepository');
 const ScoreRepository = require('../../../repositories/scoreRepository');
-const validateSchema = require('../../../utils/validation');
 const GetMatchByIdValidator = require('./GetMatchByIdValidator');
 
 class GetMatchByIdUseCase {
@@ -11,19 +10,17 @@ class GetMatchByIdUseCase {
    * @class
    * @param {object} container - Container
    * @param {ScoreRepository} container.scoreRepository - ScoreRepository
+   * @param {GetMatchByIdValidator} container.getMatchByIdValidator
    * @param {MatchRepository} container.matchRepository - MatchRepository
    */
-  constructor({ matchRepository, scoreRepository }) {
+  constructor({ matchRepository, scoreRepository, getMatchByIdValidator }) {
     this.matchRepository = matchRepository;
     this.scoreRepository = scoreRepository;
-  }
-
-  validate(request) {
-    validateSchema(GetMatchByIdValidator, request);
+    this.getMatchByIdValidator = getMatchByIdValidator;
   }
 
   async execute(matchId, academyId) {
-    this.validate(matchId);
+    this.getMatchByIdValidator.validate(matchId);
 
     const isCoordinator = await this.checkIfIsCoordinator(matchId, academyId);
 

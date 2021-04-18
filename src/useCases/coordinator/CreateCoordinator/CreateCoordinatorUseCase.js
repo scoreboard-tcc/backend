@@ -2,7 +2,6 @@ const bcryptjs = require('bcryptjs');
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
-const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
 const CreateCoordinatorValidator = require('./CreateCoordinatorValidator');
 
@@ -14,20 +13,20 @@ class CreateCoordinatorUseCase {
    * @param {object} container - Container
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
+   * @param {CreateCoordinatorValidator} container.createCoordinatorValidator
    * @param {CoordinatorRepository} container.coordinatorRepository - CoordinatorRepository
    */
-  constructor({ academyRepository, coordinatorRepository, getAcademyByIdUseCase }) {
+  constructor({
+    academyRepository, coordinatorRepository, getAcademyByIdUseCase, createCoordinatorValidator,
+  }) {
     this.academyRepository = academyRepository;
     this.coordinatorRepository = coordinatorRepository;
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
-  }
-
-  validate(coordinator) {
-    validateSchema(CreateCoordinatorValidator, coordinator);
+    this.createCoordinatorValidator = createCoordinatorValidator;
   }
 
   async execute(academyId, coordinatorPayload) {
-    this.validate(coordinatorPayload);
+    this.createCoordinatorValidator.validate(coordinatorPayload);
 
     await this.getAcademyByIdUseCase.execute(academyId);
     await this.checkIfEmailIsAlreadyUsed(coordinatorPayload.email, academyId);

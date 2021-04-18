@@ -1,5 +1,4 @@
 const ScoreRepository = require('../../../repositories/scoreRepository');
-const validateSchema = require('../../../utils/validation');
 const IncrementControllerSequenceValidator = require('./IncrementControllerSequenceValidator');
 
 class IncrementControllerSequenceUseCase {
@@ -9,19 +8,17 @@ class IncrementControllerSequenceUseCase {
    * @class
    * @param {object} container - Container
    * @param container.broker
+   * @param  {IncrementControllerSequenceValidator} container.incrementControllerSequenceValidator
    * @param {ScoreRepository} container.scoreRepository - ScoreRepository
    */
-  constructor({ scoreRepository, broker }) {
+  constructor({ scoreRepository, broker, incrementControllerSequenceValidator }) {
     this.scoreRepository = scoreRepository;
     this.broker = broker;
-  }
-
-  validate(request) {
-    validateSchema(IncrementControllerSequenceValidator, request);
+    this.incrementControllerSequenceValidator = incrementControllerSequenceValidator;
   }
 
   async execute(match) {
-    this.validate(match);
+    this.incrementControllerSequenceValidator.validate(match);
 
     const sequence = await this.scoreRepository.incrementAndGetControllerSequence(match.id);
 

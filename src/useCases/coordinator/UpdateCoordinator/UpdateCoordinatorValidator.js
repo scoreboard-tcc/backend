@@ -1,15 +1,20 @@
 const Joi = require('joi');
+const validateSchema = require('../../../utils/validation');
 
-module.exports = {
-  id: Joi.number().required(),
+const schema = Joi.object({
+  name: Joi.string()
+    .max(255)
+    .required(),
 
-  coordinator: Joi.object({
-    name: Joi.string()
-      .max(255)
-      .required(),
+  email: Joi.string()
+    .email()
+    .required(),
+}).required();
 
-    email: Joi.string()
-      .email()
-      .required(),
-  }).required(),
-};
+class UpdateCoordinatorValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
+
+module.exports = UpdateCoordinatorValidator;

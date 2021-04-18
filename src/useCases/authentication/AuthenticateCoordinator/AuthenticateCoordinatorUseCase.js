@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const config = require('../../../config/secrets');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
-const validateSchema = require('../../../utils/validation');
 const GetAcademyBySubdomainUseCase = require('../../academy/GetAcademyBySubdomain/GetAcademyBySubdomainUseCase');
 const AuthenticateCoordinatorValidator = require('./AuthenticateCoordinatorValidator');
 
@@ -14,20 +13,20 @@ class AuthenticateCoordinatorUseCase {
    * @param {object} container - Container
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    * @param {GetAcademyBySubdomainUseCase} container.getAcademyBySubdomainUseCase - GetAcademyBySubdomainUseCase
+   * @param {AuthenticateCoordinatorValidator} container.authenticateCoordinatorValidator
    * @param {CoordinatorRepository} container.coordinatorRepository - CoordinatorRepository
    */
-  constructor({ academyRepository, coordinatorRepository, getAcademyBySubdomainUseCase }) {
+  constructor({
+    academyRepository, coordinatorRepository, getAcademyBySubdomainUseCase, authenticateCoordinatorValidator,
+  }) {
     this.academyRepository = academyRepository;
     this.coordinatorRepository = coordinatorRepository;
     this.getAcademyBySubdomainUseCase = getAcademyBySubdomainUseCase;
-  }
-
-  validate(request) {
-    validateSchema(AuthenticateCoordinatorValidator, request);
+    this.authenticateCoordinatorValidator = authenticateCoordinatorValidator;
   }
 
   async execute(request) {
-    this.validate(request);
+    this.authenticateCoordinatorValidator.validate(request);
 
     const academy = await this.getAcademyBySubdomainUseCase.execute(request.academySubdomain);
 

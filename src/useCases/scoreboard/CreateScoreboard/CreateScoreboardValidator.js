@@ -1,20 +1,15 @@
 const Joi = require('joi');
 
-const scoreboardSchema = Joi.object({
-  serialNumber: Joi.string()
-    .max(255)
-    .required(),
+const validateSchema = require('../../../utils/validation');
+const schema = require('./CreateScoreboardValidatorSchema');
 
-  description: Joi.string()
-    .max(255)
-    .required(),
+class CreateScoreboardValidator {
+  validate(data) {
+    return validateSchema(Joi.alternatives().try(
+      schema,
+      Joi.array().items(schema),
+    ), data);
+  }
+}
 
-  staticToken: Joi.string()
-    .max(255)
-    .required(),
-});
-
-module.exports = Joi.alternatives().try(
-  scoreboardSchema,
-  Joi.array().items(scoreboardSchema),
-);
+module.exports = CreateScoreboardValidator;

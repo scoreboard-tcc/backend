@@ -1,6 +1,15 @@
 const Joi = require('joi');
+const validateSchema = require('../../../utils/validation');
 
-module.exports = Joi.object({
+const schema = Joi.object({
   playerId: Joi.number().required(),
   academyId: Joi.number().required(),
 }).required();
+
+class UnlinkPlayerFromAcademyValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
+
+module.exports = UnlinkPlayerFromAcademyValidator;

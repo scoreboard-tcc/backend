@@ -1,6 +1,5 @@
 const BusinessException = require('../../../exceptions/BusinessException');
 const EnrollmentRepository = require('../../../repositories/enrollmentRepository');
-const validateSchema = require('../../../utils/validation');
 const UnlinkPlayerFromAcademyValidator = require('./UnlinkPlayerFromAcademyValidator');
 
 class UnlinkPlayerFromAcademyUseCase {
@@ -9,20 +8,18 @@ class UnlinkPlayerFromAcademyUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {UnlinkPlayerFromAcademyValidator} container.unlinkPlayerFromAcademyValidator
    * @param {EnrollmentRepository} container.enrollmentRepository - EnrollmentRepository
    */
   constructor({
-    enrollmentRepository,
+    enrollmentRepository, unlinkPlayerFromAcademyValidator,
   }) {
     this.enrollmentRepository = enrollmentRepository;
-  }
-
-  validate(request) {
-    validateSchema(UnlinkPlayerFromAcademyValidator, request);
+    this.unlinkPlayerFromAcademyValidator = unlinkPlayerFromAcademyValidator;
   }
 
   async execute(request) {
-    this.validate(request);
+    this.unlinkPlayerFromAcademyValidator.validate(request);
 
     await this.checkIfPlayerIsLinkedToAcademy(request.playerId, request.academyId);
     await this.unlinkPlayerFromAcademy(request.playerId, request.academyId);

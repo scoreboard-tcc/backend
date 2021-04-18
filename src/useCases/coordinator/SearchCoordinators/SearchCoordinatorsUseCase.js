@@ -1,7 +1,6 @@
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
-const validateSchema = require('../../../utils/validation');
 const SearchCoordinatorsValidator = require('./SearchCoordinatorsValidator');
 
 class SearchCoordinatorsUseCase {
@@ -11,19 +10,17 @@ class SearchCoordinatorsUseCase {
    * @class
    * @param {object} container - Container
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
+   * @param {SearchCoordinatorsValidator} container.searchCoordinatorsValidator
    * @param {CoordinatorRepository} container.coordinatorRepository - CoordinatorRepository
    */
-  constructor({ academyRepository, coordinatorRepository }) {
+  constructor({ academyRepository, coordinatorRepository, searchCoordinatorsValidator }) {
     this.academyRepository = academyRepository;
     this.coordinatorRepository = coordinatorRepository;
-  }
-
-  validate(request) {
-    validateSchema(SearchCoordinatorsValidator, request);
+    this.searchCoordinatorsValidator = searchCoordinatorsValidator;
   }
 
   async execute(academyId, search, pagination) {
-    this.validate({ academyId, search });
+    this.searchCoordinatorsValidator.validate({ academyId, search });
 
     await this.checkIfAcademyExists(academyId);
 

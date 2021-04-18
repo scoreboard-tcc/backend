@@ -1,7 +1,6 @@
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const ScoreboardRepository = require('../../../repositories/scoreboardRepository');
-const validateSchema = require('../../../utils/validation');
 const UpdateScoreboardValidator = require('./UpdateScoreboardValidator');
 
 class UpdateScoreboardUseCase {
@@ -10,19 +9,16 @@ class UpdateScoreboardUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {UpdateScoreboardValidator} container.updateScoreboardValidator
    * @param {ScoreboardRepository} container.scoreboardRepository - ScoreboardRepository
    */
-  constructor({ scoreboardRepository }) {
+  constructor({ scoreboardRepository, updateScoreboardValidator }) {
     this.scoreboardRepository = scoreboardRepository;
-  }
-
-  validate(id, request) {
-    validateSchema(UpdateScoreboardValidator.id, id);
-    validateSchema(UpdateScoreboardValidator.scoreboard, request);
+    this.updateScoreboardValidator = updateScoreboardValidator;
   }
 
   async execute(id, request) {
-    this.validate(id, request);
+    this.updateScoreboardValidator.validate(request);
 
     await this.checkIfScoreboardExists(id);
     await this.checkIfSerialNumberIsAvailable(request.serialNumber, id);

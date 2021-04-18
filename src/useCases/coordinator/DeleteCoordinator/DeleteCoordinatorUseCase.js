@@ -1,6 +1,5 @@
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
-const validateSchema = require('../../../utils/validation');
 const DeleteCoordinatorValidator = require('./DeleteCoordinatorValidator');
 
 class DeleteCoordinatorUseCase {
@@ -9,18 +8,16 @@ class DeleteCoordinatorUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {DeleteCoordinatorValidator} container.deleteCoordinatorValidator
    * @param {CoordinatorRepository} container.coordinatorRepository - CoordinatorRepository
    */
-  constructor({ coordinatorRepository }) {
+  constructor({ coordinatorRepository, deleteCoordinatorValidator }) {
     this.coordinatorRepository = coordinatorRepository;
-  }
-
-  validate(id) {
-    validateSchema(DeleteCoordinatorValidator, id);
+    this.deleteCoordinatorValidator = deleteCoordinatorValidator;
   }
 
   async execute(id, academyId) {
-    this.validate(id);
+    this.deleteCoordinatorValidator.validate(id);
 
     const coordinator = await this.checkIfCoordinatorExists(id);
 

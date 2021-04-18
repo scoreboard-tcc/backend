@@ -1,7 +1,6 @@
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const CoordinatorRepository = require('../../../repositories/coordinatorRepository');
-const validateSchema = require('../../../utils/validation');
 const UpdateCoordinatorValidator = require('./UpdateCoordinatorValidator');
 
 class UpdateCoordinatorUseCase {
@@ -10,19 +9,16 @@ class UpdateCoordinatorUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {UpdateCoordinatorValidator} container.updateCoordinatorValidator
    * @param {CoordinatorRepository} container.coordinatorRepository - CoordinatorRepository
    */
-  constructor({ coordinatorRepository }) {
+  constructor({ coordinatorRepository, updateCoordinatorValidator }) {
     this.coordinatorRepository = coordinatorRepository;
-  }
-
-  validate(id, coordinator) {
-    validateSchema(UpdateCoordinatorValidator.id, id);
-    validateSchema(UpdateCoordinatorValidator.coordinator, coordinator);
+    this.updateCoordinatorValidator = updateCoordinatorValidator;
   }
 
   async execute(id, coordinatorRequest, academyId) {
-    this.validate(id, coordinatorRequest);
+    this.updateCoordinatorValidator.validate(coordinatorRequest);
 
     const coordinator = await this.checkIfCoordinatorExists(id);
 

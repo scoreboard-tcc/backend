@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../../../config/secrets');
 const AdminRepository = require('../../../repositories/adminRepository');
-const validateSchema = require('../../../utils/validation');
 const AuthenticateAdminValidator = require('./AuthenticateAdminValidator');
 
 class AuthenticateAdminUseCase {
@@ -10,18 +9,16 @@ class AuthenticateAdminUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {AuthenticateAdminValidator} container.authenticateAdminValidator
    * @param {AdminRepository} container.adminRepository - AdminRepository
    */
-  constructor({ adminRepository }) {
+  constructor({ adminRepository, authenticateAdminValidator }) {
     this.adminRepository = adminRepository;
-  }
-
-  validate(credentials) {
-    validateSchema(AuthenticateAdminValidator, credentials);
+    this.authenticateAdminValidator = authenticateAdminValidator;
   }
 
   async execute(credentials) {
-    this.validate(credentials);
+    this.authenticateAdminValidator.validate(credentials);
 
     await this.checkIfCredentiaisAreValid(credentials);
 

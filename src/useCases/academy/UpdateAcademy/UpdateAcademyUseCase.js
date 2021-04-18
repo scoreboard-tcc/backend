@@ -1,6 +1,5 @@
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const AcademyRepository = require('../../../repositories/academyRepository');
-const validateSchema = require('../../../utils/validation');
 const UploadFileUseCase = require('../../utils/UploadFile/UploadFileUseCase');
 const GetAcademyByIdUseCase = require('../GetAcademyById/GetAcademyByIdUseCase');
 const UpdateAcademyValidator = require('./UpdateAcademyValidator');
@@ -13,21 +12,20 @@ class UpdateAcademyUseCase {
    * @param {object} container - Container
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
+   * @param {UpdateAcademyValidator} container.updateAcademyValidator
    * @param {UploadFileUseCase} container.uploadFileUseCase - UploadFileUseCase
    */
-  constructor({ academyRepository, getAcademyByIdUseCase, uploadFileUseCase }) {
+  constructor({
+    academyRepository, getAcademyByIdUseCase, uploadFileUseCase, updateAcademyValidator,
+  }) {
     this.academyRepository = academyRepository;
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.uploadFileUseCase = uploadFileUseCase;
-  }
-
-  validate(id, request) {
-    validateSchema(UpdateAcademyValidator.id, id);
-    validateSchema(UpdateAcademyValidator.academy, request);
+    this.updateAcademyValidator = updateAcademyValidator;
   }
 
   async execute(id, request) {
-    this.validate(id, request);
+    this.updateAcademyValidator.validate(request);
 
     await this.checkIfAcademyExists(id);
     await this.checkIfSubdomainIsAlreadyUsed(request.subdomain, id);

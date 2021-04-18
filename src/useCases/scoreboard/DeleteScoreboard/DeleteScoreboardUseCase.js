@@ -1,6 +1,5 @@
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const ScoreboardRepository = require('../../../repositories/scoreboardRepository');
-const validateSchema = require('../../../utils/validation');
 const DeleteScoreboardValidator = require('./DeleteScoreboardValidator');
 
 class DeleteScoreboardUseCase {
@@ -9,18 +8,16 @@ class DeleteScoreboardUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {DeleteScoreboardValidator}  container.deleteScoreboardValidator
    * @param {ScoreboardRepository} container.scoreboardRepository - ScoreboardRepository
    */
-  constructor({ scoreboardRepository }) {
+  constructor({ scoreboardRepository, deleteScoreboardValidator }) {
     this.scoreboardRepository = scoreboardRepository;
-  }
-
-  validate(id) {
-    validateSchema(DeleteScoreboardValidator, id);
+    this.deleteScoreboardValidator = deleteScoreboardValidator;
   }
 
   async execute(id) {
-    this.validate(id);
+    this.deleteScoreboardValidator.validate(id);
 
     await this.checkIfScoreboardExists(id);
 

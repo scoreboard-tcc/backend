@@ -1,6 +1,16 @@
 const Joi = require('joi');
 
-module.exports = Joi.string()
+const validateSchema = require('../../../utils/validation');
+
+const schema = Joi.string()
   .allow('')
   .max(255)
   .required();
+
+class SearchAcademiesValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
+
+module.exports = SearchAcademiesValidator;

@@ -1,8 +1,9 @@
 const Joi = require('joi');
-const CreateCoordinatorValidator = require('../../coordinator/CreateCoordinator/CreateCoordinatorValidator');
-const CreateScoreboardValidator = require('../../scoreboard/CreateScoreboard/CreateScoreboardValidator');
+const validateSchema = require('../../../utils/validation');
+const CreateCoordinatorValidatorSchema = require('../../coordinator/CreateCoordinator/CreateCoordinatorValidatorSchema');
+const CreateScoreboardValidatorSchema = require('../../scoreboard/CreateScoreboard/CreateScoreboardValidatorSchema');
 
-module.exports = Joi.object({
+const schema = Joi.object({
   name: Joi.string()
     .max(255)
     .required(),
@@ -16,11 +17,19 @@ module.exports = Joi.object({
 
   scoreboards: Joi.array()
     .optional()
-    .items(CreateScoreboardValidator)
+    .items(CreateScoreboardValidatorSchema)
     .max(20),
 
-  coordinator: CreateCoordinatorValidator
+  coordinator: CreateCoordinatorValidatorSchema
     .required(),
 
   logo: Joi.any().required(),
 });
+
+class CreateAcademyValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
+
+module.exports = CreateAcademyValidator;

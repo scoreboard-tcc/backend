@@ -1,5 +1,4 @@
 const PlayerRepository = require('../../../repositories/playerRepository');
-const validateSchema = require('../../../utils/validation');
 const SearchPlayersValidator = require('./SearchPlayersValidator');
 
 class SearchPlayersUseCase {
@@ -8,18 +7,16 @@ class SearchPlayersUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {SearchPlayersValidator} container.searchPlayersValidator
    * @param {PlayerRepository} container.playerRepository - PlayerRepository
    */
-  constructor({ playerRepository }) {
+  constructor({ playerRepository, searchPlayersValidator }) {
     this.playerRepository = playerRepository;
-  }
-
-  validate(request) {
-    validateSchema(SearchPlayersValidator, request);
+    this.searchPlayersValidator = searchPlayersValidator;
   }
 
   async execute(request, academyId, pagination) {
-    this.validate(request);
+    this.searchPlayersValidator.validate(request);
 
     if (request.onlyFromAcademy) {
       return this.searchPlayersOnAcademy(academyId, request.search, pagination);

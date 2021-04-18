@@ -31,7 +31,7 @@ function processGlob(string) {
 }
 
 processGlob('src/repositories/*Repository.js');
-processGlob('src/useCases/**/*{Controller,UseCase}.js');
+processGlob('src/useCases/**/*{Controller,UseCase,Validator}.js');
 
 container.register({
   broker: awilix.asValue(broker, { lifetime: awilix.Lifetime.SINGLETON }),

@@ -1,7 +1,6 @@
 const { v4: uuid } = require('uuid');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const MatchRepository = require('../../../repositories/matchRepository');
-const validateSchema = require('../../../utils/validation');
 const IncrementControllerSequenceUseCase = require('../IncrementControllerSequence/IncrementControllerSequenceUseCase');
 const ChangeControlValidator = require('./ChangeControlValidator');
 
@@ -12,19 +11,17 @@ class ChangeControlUseCase {
    * @class
    * @param {object} container - Container
    * @param {IncrementControllerSequenceUseCase} container.incrementControllerSequenceUseCase - IncrementControllerSequenceUseCase
+   * @param {ChangeControlValidator} container.changeControlValidator
    * @param {MatchRepository} container.matchRepository - MatchRepository
    */
-  constructor({ matchRepository, incrementControllerSequenceUseCase }) {
+  constructor({ matchRepository, incrementControllerSequenceUseCase, changeControlValidator }) {
     this.matchRepository = matchRepository;
     this.incrementControllerSequenceUseCase = incrementControllerSequenceUseCase;
-  }
-
-  validate(refreshToken) {
-    validateSchema(ChangeControlValidator, refreshToken);
+    this.changeControlValidator = changeControlValidator;
   }
 
   async execute(refreshToken) {
-    this.validate(refreshToken);
+    this.changeControlValidator.validate(refreshToken);
 
     const match = await this.matchRepository.findByRefreshToken(refreshToken);
 

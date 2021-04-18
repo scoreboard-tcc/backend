@@ -1,6 +1,7 @@
 const Joi = require('joi');
+const validateSchema = require('../../../utils/validation');
 
-module.exports = Joi.object({
+const schema = Joi.object({
   scoreboardId: Joi.number().allow(null),
 
   player1Id: Joi.number().allow(null),
@@ -23,3 +24,12 @@ module.exports = Joi.object({
   hasAdvantage: Joi.boolean().required(),
 
 }).required();
+
+class CreateMatchValidator {
+
+  validate(data) {
+    return validateSchema(schema, data)
+  }
+}
+
+module.exports = CreateMatchValidator

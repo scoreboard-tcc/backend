@@ -8,7 +8,6 @@ const ScoreboardRepository = require('../../../repositories/scoreboardRepository
 const ScoreRepository = require('../../../repositories/scoreRepository');
 const { isEmpty } = require('../../../utils/string');
 
-const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
 const CreateMatchValidator = require('./CreateMatchValidator');
 
@@ -25,10 +24,11 @@ class CreateMatchUseCase {
    * @param {ScoreRepository} container.scoreRepository - ScoreRepository
    * @param container.broker
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
+   * @param {CreateMatchValidator} container.createMatchValidator - CreateMatchValidator
    */
   constructor({
     getAcademyByIdUseCase, scoreboardRepository, enrollmentRepository, matchRepository, playerRepository,
-    scoreRepository, broker,
+    scoreRepository, broker, createMatchValidator,
   }) {
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
     this.scoreboardRepository = scoreboardRepository;
@@ -37,14 +37,11 @@ class CreateMatchUseCase {
     this.playerRepository = playerRepository;
     this.scoreRepository = scoreRepository;
     this.broker = broker;
-  }
-
-  validate(request) {
-    validateSchema(CreateMatchValidator, request);
+    this.createMatchValidator = createMatchValidator
   }
 
   async execute(academyId, request) {
-    this.validate(request);
+    this.createMatchValidator.validate(request)
 
     await this.getAcademyByIdUseCase.execute(academyId);
 

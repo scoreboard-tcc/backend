@@ -1,6 +1,5 @@
 const AcademyRepository = require('../../../repositories/academyRepository');
 const ScoreboardRepository = require('../../../repositories/scoreboardRepository');
-const validateSchema = require('../../../utils/validation');
 const GetAcademyByIdUseCase = require('../../academy/GetAcademyById/GetAcademyByIdUseCase');
 const SearchScoreboardsValidator = require('./SearchScoreboardsValidator');
 
@@ -12,21 +11,20 @@ class SearchScoreboardsUseCase {
    * @param {object} container - Container
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    * @param {GetAcademyByIdUseCase} container.getAcademyByIdUseCase - GetAcademyByIdUseCase
+   * @param {SearchScoreboardsValidator} container.searchScoreboardsValidator
    * @param {ScoreboardRepository} container.scoreboardRepository - ScoreboardRepository
    */
-  constructor({ academyRepository, scoreboardRepository, getAcademyByIdUseCase }) {
+  constructor({
+    academyRepository, scoreboardRepository, getAcademyByIdUseCase, searchScoreboardsValidator,
+  }) {
     this.academyRepository = academyRepository;
     this.scoreboardRepository = scoreboardRepository;
     this.getAcademyByIdUseCase = getAcademyByIdUseCase;
-  }
-
-  validate(academyId, search) {
-    validateSchema(SearchScoreboardsValidator.academyId, academyId);
-    validateSchema(SearchScoreboardsValidator.search, search);
+    this.searchScoreboardsValidator = searchScoreboardsValidator;
   }
 
   async execute(academyId, search, pagination) {
-    this.validate(academyId, search);
+    this.searchScoreboardsValidator.validate(search);
 
     await this.getAcademyByIdUseCase.execute(academyId);
 

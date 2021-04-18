@@ -1,6 +1,5 @@
 const AlreadyUsedException = require('../../../exceptions/AlreadyUsedException');
 const AcademyRepository = require('../../../repositories/academyRepository');
-const validateSchema = require('../../../utils/validation');
 const CreateCoordinatorUseCase = require('../../coordinator/CreateCoordinator/CreateCoordinatorUseCase');
 const CreateScoreboardUseCase = require('../../scoreboard/CreateScoreboard/CreateScoreboardUseCase');
 const UploadFileUseCase = require('../../utils/UploadFile/UploadFileUseCase');
@@ -18,23 +17,21 @@ class CreateAcademyUseCase {
    * @param {CheckIfSubdomainIsAvailableUseCase} container.checkIfSubdomainIsAvailableUseCase - CheckIfSubdomainIsAvailableUseCase
    * @param {UploadFileUseCase} container.uploadFileUseCase - UploadFileUseCase
    * @param {CreateScoreboardUseCase} container.createScoreboardUseCase - CreateScoreboardUseCase
+   * @param {CreateAcademyValidator} container.createAcademyValidator  - CreateAcademyValidator
    */
   constructor({
-    academyRepository, createScoreboardUseCase, createCoordinatorUseCase, checkIfSubdomainIsAvailableUseCase, uploadFileUseCase,
+    academyRepository, createScoreboardUseCase, createCoordinatorUseCase, checkIfSubdomainIsAvailableUseCase, uploadFileUseCase, createAcademyValidator,
   }) {
     this.academyRepository = academyRepository;
     this.createScoreboardUseCase = createScoreboardUseCase;
     this.createCoordinatorUseCase = createCoordinatorUseCase;
     this.checkIfSubdomainIsAvailableUseCase = checkIfSubdomainIsAvailableUseCase;
     this.uploadFileUseCase = uploadFileUseCase;
-  }
-
-  validate(scoreboard) {
-    validateSchema(CreateAcademyValidator, scoreboard);
+    this.createAcademyValidator = createAcademyValidator;
   }
 
   async execute(request) {
-    this.validate(request);
+    this.createAcademyValidator.validate(request);
 
     await this.checkIfSubdomainIsAlreadyUsed(request.subdomain);
 

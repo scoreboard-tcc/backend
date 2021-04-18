@@ -1,5 +1,4 @@
 const AcademyRepository = require('../../../repositories/academyRepository');
-const validateSchema = require('../../../utils/validation');
 const SearchAcademiesValidator = require('./SearchAcademiesValidator');
 
 class SearchAcademiesUseCase {
@@ -8,18 +7,16 @@ class SearchAcademiesUseCase {
    *
    * @class
    * @param {object} container - Container
+   * @param {SearchAcademiesValidator} container.searchAcademiesValidator
    * @param {AcademyRepository} container.academyRepository - AcademyRepository
    */
-  constructor({ academyRepository }) {
+  constructor({ academyRepository, searchAcademiesValidator }) {
     this.academyRepository = academyRepository;
-  }
-
-  validate(name) {
-    validateSchema(SearchAcademiesValidator, name);
+    this.searchAcademiesValidator = searchAcademiesValidator;
   }
 
   async execute(name, pagination) {
-    this.validate(name);
+    this.searchAcademiesValidator.validate(name);
 
     return this.academyRepository.findByName(name, pagination);
   }

@@ -1,6 +1,15 @@
 const Joi = require('joi');
+const validateSchema = require('../../../utils/validation');
 
-module.exports = Joi.object({
+const schema = Joi.object({
   id: Joi.number().required(),
   topic: Joi.string().required(),
 }).required();
+
+class IncrementControllerSequenceValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
+
+module.exports = IncrementControllerSequenceValidator;

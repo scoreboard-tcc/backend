@@ -1,15 +1,11 @@
-const Joi = require('joi');
+const validateSchema = require('../../../utils/validation');
 
-module.exports = Joi.object({
-  name: Joi.string()
-    .max(255)
-    .required(),
+const schema = require('./CreateCoordinatorValidatorSchema');
 
-  email: Joi.string()
-    .email()
-    .required(),
+class CreateCoordinatorValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
 
-  password: Joi.string()
-    .min(6)
-    .required(),
-});
+module.exports = CreateCoordinatorValidator;

@@ -1,6 +1,7 @@
 const Joi = require('joi');
+const validateSchema = require('../../../utils/validation');
 
-module.exports = Joi.object({
+const schema = Joi.object({
   search: Joi.string()
     .allow('')
     .max(255)
@@ -8,3 +9,11 @@ module.exports = Joi.object({
 
   onlyFromAcademy: Joi.boolean().optional(),
 }).required();
+
+class SearchPlayersValidator {
+  validate(data) {
+    return validateSchema(schema, data);
+  }
+}
+
+module.exports = SearchPlayersValidator;
