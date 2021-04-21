@@ -8,13 +8,13 @@ services:
       - APP_PORT=8080
       - BROKER_WS_PORT=8081
       - BROKER_STANDALONE_PORT=1883
-      - POSTGRES_URL=postgresql://postgres:1234@localhost:5432/scoreboard?schema=public
+      - POSTGRES_URL=postgresql://database:1234@localhost:5432/scoreboard?schema=public
       - MONGO_URL=mongodb://mongo:1234@localhost:27017/scoreboard?authSource=admin
       - JWT_SECRET=ahdfkljsahdflksdh
       - FIREBASE_DATABASE_URL=https://scoreboard-31923.firebaseio.com
       - FIREBASE_STORAGE_BUCKET=scoreboard-31923.appspot.com
       - FIREBASE_UPLOAD_PATH=https://storage.googleapis.com/scoreboard-31923.appspot.com/
-      - GOOGLE_APPLICATION_CREDENTIALS=./serviceAccountKey.json
+      - GOOGLE_APPLICATION_CREDENTIALS=./config/serviceAccountKey.json
       - BROKER_PERSISTENCE_URL=mongodb://mongo:1234@localhost:27017/broker?authSource=admin
     ports:
       - 1883:1883
@@ -23,7 +23,8 @@ services:
     depends_on:
       - database
       - mongo
-
+    volumes:
+      - ./config/:/usr/src/app/config
 
   database:
     image: postgres

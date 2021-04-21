@@ -26,10 +26,9 @@ const schema = Joi.object({
 }).required();
 
 class CreateMatchValidator {
-
   validate(data) {
-    return validateSchema(schema, data)
+    return validateSchema(schema, data);
   }
 }
 
-module.exports = CreateMatchValidator
+module.exports = CreateMatchValidator;
