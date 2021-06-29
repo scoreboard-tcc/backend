@@ -37,11 +37,11 @@ class CreateMatchUseCase {
     this.playerRepository = playerRepository;
     this.scoreRepository = scoreRepository;
     this.broker = broker;
-    this.createMatchValidator = createMatchValidator
+    this.createMatchValidator = createMatchValidator;
   }
 
   async execute(academyId, request) {
-    this.createMatchValidator.validate(request)
+    this.createMatchValidator.validate(request);
 
     await this.getAcademyByIdUseCase.execute(academyId);
 
@@ -126,7 +126,7 @@ class CreateMatchUseCase {
 
     const [id] = await this.matchRepository.create(match);
 
-    this.publishInitialData(match.brokerTopic);
+    this.publishInitialData(match.brokerTopic, request.firstPlayerToServe);
 
     const createdMatch = await this.matchRepository.findByMatchIdAndIngame(id);
 
@@ -140,7 +140,7 @@ class CreateMatchUseCase {
     };
   }
 
-  async publishInitialData(brokerTopic) {
+  async publishInitialData(brokerTopic, firstPlayerToServe) {
     const topics = [
       'Set1_A',
       'Set1_B',
@@ -153,8 +153,7 @@ class CreateMatchUseCase {
       'Current_Set',
       'SetsWon_A',
       'SetsWon_B',
-      'Controller_Sequence',
-      'Player_Serving'];
+      'Controller_Sequence'];
 
     topics.forEach((topic) => this.broker.publish({
       topic: `${brokerTopic}/${topic}`,
@@ -162,6 +161,12 @@ class CreateMatchUseCase {
       qos: 1,
       retain: true,
     }));
+
+    this.broker.publish({
+      topic: `${brokerTopic}/Player_Serving`,
+      payload: Buffer.from(firstPlayerToServe),
+      retain: true,
+    });
 
     this.broker.publish({
       topic: `${brokerTopic}/Match_Winner`,

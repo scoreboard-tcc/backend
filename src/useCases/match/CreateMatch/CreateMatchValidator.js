@@ -23,6 +23,8 @@ const schema = Joi.object({
 
   hasAdvantage: Joi.boolean().required(),
 
+  firstPlayerToServe: Joi.valid('0', '1').required(),
+
 }).required();
 
 class CreateMatchValidator {
