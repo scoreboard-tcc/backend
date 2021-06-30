@@ -32,7 +32,7 @@ function processGlob(string) {
 
 processGlob('src/repositories/*Repository.js');
 processGlob('src/useCases/**/*{Controller,UseCase,Validator}.js');
-processGlob('src/web/Controllers/**/*Controller.js');
+processGlob('src/web/controllers/**/*Controller.js');
 
 container.register({
   broker: awilix.asValue(broker, { lifetime: awilix.Lifetime.SINGLETON }),
