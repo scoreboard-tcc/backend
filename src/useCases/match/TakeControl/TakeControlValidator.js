@@ -1,9 +1,7 @@
 const Joi = require('joi');
 const validateSchema = require('../../../utils/validation');
 
-const schema = Joi.object({
-  matchId: Joi.number().required(),
-}).required();
+const schema = Joi.number().required();
 
 class TakeControlValidator {
   validate(data) {
