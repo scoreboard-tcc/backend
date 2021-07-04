@@ -1,7 +1,7 @@
 exports.seed = (knex) => knex('Academy').del()
   .then(() => knex('Academy').insert([
     {
-      id: 1,
+      id: 5,
       subdomain: 'mouraotennis',
       name: 'Mourão Tennis',
       address: 'Rua 123',
