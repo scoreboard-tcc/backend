@@ -10,4 +10,14 @@ exports.seed = (knex) => knex('Player').del()
       email: 'ana@gmail.com',
       name: 'Ana',
     },
+    {
+      id: 3,
+      email: 'maria@gmail.com',
+      name: 'Maria',
+    },
+    {
+      id: 4,
+      email: 'joao@gmail.com',
+      name: 'João',
+    },
   ]));
