@@ -1,22 +1,15 @@
 const { v4: uuid } = require('uuid');
-const firebase = require('../../../providers/firebase');
+const minio = require('../../../providers/storage/minio');
+const config = require('../../../config/minio')
 
 class UploadFileUseCase {
   async execute(file) {
-    const bucket = firebase.storage().bucket();
-    const path = `logos/${uuid()}.${file.originalname.split('.').pop()}`;
+    const extension = file.originalname.split('.').pop()
+    const fileName = `${uuid()}.${extension}`;
 
-    const createdFile = bucket.file(path);
+    minio.putObject('logos', fileName, file.buffer);
 
-    await createdFile.save(file.buffer, {
-      resumable: false,
-      gzip: true,
-      contentType: file.mimetype,
-    });
-
-    await createdFile.makePublic();
-
-    return path;
+    return `${config.domain}/logos/${fileName}`;
   }
 }
 
