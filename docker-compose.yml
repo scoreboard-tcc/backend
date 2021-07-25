@@ -1,34 +1,7 @@
 version: '3.7'
 services:
-
-  backend:
-    image: docker.pkg.github.com/scoreboard-tcc/backendnovo/backend:latest
-    restart: never
-    environment:
-      - APP_PORT=8080
-      - BROKER_WS_PORT=8081
-      - BROKER_STANDALONE_PORT=1883
-      - POSTGRES_URL=postgresql://database:1234@localhost:5432/scoreboard?schema=public
-      - MONGO_URL=mongodb://mongo:1234@localhost:27017/scoreboard?authSource=admin
-      - JWT_SECRET=ahdfkljsahdflksdh
-      - FIREBASE_DATABASE_URL=https://scoreboard-31923.firebaseio.com
-      - FIREBASE_STORAGE_BUCKET=scoreboard-31923.appspot.com
-      - FIREBASE_UPLOAD_PATH=https://storage.googleapis.com/scoreboard-31923.appspot.com/
-      - GOOGLE_APPLICATION_CREDENTIALS=./config/serviceAccountKey.json
-      - BROKER_PERSISTENCE_URL=mongodb://mongo:1234@localhost:27017/broker?authSource=admin
-    ports:
-      - 1883:1883
-      - 8080:8080
-      - 8081:8081
-    depends_on:
-      - database
-      - mongo
-    volumes:
-      - ./config/:/usr/src/app/config
-
   database:
     image: postgres
-    restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234
@@ -37,20 +10,9 @@ services:
       - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
-  
-  test_database:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_DB=scoreboard
-    ports:
-      - 5433:5432
 
   mongo:
     image: mongo
-    restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mongo
       - MONGO_INITDB_ROOT_PASSWORD=1234
@@ -60,12 +22,54 @@ services:
     volumes:
       - mongodata:/data/db
 
-  test_mongo:
-    image: mongo
-    restart: always
+  minio:
+    image: minio/minio
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio123
     ports:
-      - 27018:27017
-  
+      - 9000:9000
+    volumes:
+      - minio:/data
+    command: server /data
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 minio minio123;
+      /usr/bin/mc mb myminio/logos;
+      /usr/bin/mc policy set download myminio/logos;
+      exit 0;
+      "
+
+  backend:
+    build: .
+    environment:
+      - APP_PORT=8080
+      - BROKER_WS_PORT=8081
+      - BROKER_STANDALONE_PORT=1883
+      - POSTGRES_URL=postgresql://postgres:1234@database:5432/scoreboard?schema=public
+      - MONGO_URL=mongodb://mongo:1234@mongo:27017/scoreboard?authSource=admin
+      - JWT_SECRET=ahdfkljsahdflksdh
+      - BROKER_PERSISTENCE_URL=mongodb://mongo:1234@mongo:27017/broker?authSource=admin
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=minio123
+      - MINIO_DOMAIN=server.local/storage
+    ports:
+      - 1883:1883
+      - 8080:8080
+      - 8081:8081
+    depends_on:
+      - database
+      - mongo
+      - minio
+
 volumes:
   pgdata:
   mongodata:
+  minio:

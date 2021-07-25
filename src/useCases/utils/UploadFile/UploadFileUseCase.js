@@ -1,23 +1,41 @@
 const { v4: uuid } = require('uuid');
-const firebase = require('../../../providers/firebase');
+const minio = require('../../../providers/storage/minio');
+const config = require('../../../config/minio')
+
+async function createBucketIfNotExists() {
+  const exists = (await minio.listBuckets()).find(b => b.name === 'logos')
+
+  if (!exists) {
+    await minio.makeBucket('logos')
+    await minio.setBucketPolicy('logos', JSON.stringify({
+      "Id": "PolicyID",
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "Stmt1610823452352355758",
+          "Action": [
+            "s3:GetObject"
+          ],
+          "Effect": "Allow",
+          "Resource": "arn:aws:s3:::logos/*",
+          "Principal": "*"
+        }
+      ]
+    }))
+  }
+}
 
 class UploadFileUseCase {
   async execute(file) {
-    const bucket = firebase.storage().bucket();
-    const path = `logos/${uuid()}.${file.originalname.split('.').pop()}`;
+    const extension = file.originalname.split('.').pop()
+    const fileName = `${uuid()}.${extension}`;
 
-    const createdFile = bucket.file(path);
+    minio.putObject('logos', fileName, file.buffer);
 
-    await createdFile.save(file.buffer, {
-      resumable: false,
-      gzip: true,
-      contentType: file.mimetype,
-    });
-
-    await createdFile.makePublic();
-
-    return path;
+    return `${config.domain}/logos/${fileName}`;
   }
 }
+
+createBucketIfNotExists()
 
 module.exports = UploadFileUseCase;

@@ -1,4 +1,3 @@
-const firebaseConfig = require('../../../config/firebase');
 const NotFoundException = require('../../../exceptions/NotFoundException');
 const AcademyRepository = require('../../../repositories/academyRepository');
 const GetAcademyBySubdomainValidator = require('./GetAcademyBySubdomainValidator');
@@ -26,7 +25,7 @@ class GetAcademyPublicDataBySubdomainUseCase {
       throw new NotFoundException('academia', 'subdomínio', subdomain);
     }
 
-    return { ...academy, logoUrl: firebaseConfig.uploadPath + academy.logoUrl };
+    return academy;
   }
 }
 
