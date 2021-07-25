@@ -22,7 +22,7 @@ jobs:
     - name: Publish to Github Packages Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: scoreboard-tcc/backendnovo/backend
+        name: scoreboard-tcc/backend/backend
         registry: docker.pkg.github.com
         username: ${{ secrets.GH_USERNAME }}
         password: ${{ secrets.GITHUB_TOKEN }}
